@@ -33,15 +33,15 @@ async function resetCharsData(h) {
         return;
     }
 
-    const proceed = await askIsAbandon();
+    const proceed = await warningArea();
     if (!proceed) return;
 
     setEmptyData(h);
 }
 
-function askIsAbandon() {
+function warningArea() {
     return new Promise((resolve) => {
-        const abandonDiv = document.getElementById('askIsAbandon');
+        const abandonDiv = document.getElementById('warningArea');
 
         abandonDiv.innerHTML = `
             <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
@@ -59,13 +59,23 @@ function askIsAbandon() {
     });
 }
 
+function showError(message) {
+    const errorDiv = document.getElementById('warningArea');
+    errorDiv.innerHTML = `
+        <span style="color: var(--vga-red)">&nbsp;* Error: ${message}</span>
+    `;
+    setTimeout(() => {
+        if (errorDiv.innerText.includes('Error:')) errorDiv.innerHTML = '';
+    }, 2000);
+}
+
 async function openFont() {
     if (editorData.isDirty) {
         updateTitle(editorData.index, true);
         return;
     }
 
-    const proceed = await askIsAbandon();
+    const proceed = await warningArea();
     if (!proceed) return;
 
     const fileInput = document.getElementById('OpenFontInput');
@@ -85,10 +95,16 @@ async function openFont() {
         }
 
         let charLen = result.length / 256;
-        if (charLen % 1 !== 0) return;
+        if (charLen % 1 !== 0) {
+            showError("Font data error!");
+            return;
+        }
 
         let fontHeight = charLen / 8;
-        if (fontHeight != 8 && fontHeight != 16) return;
+        if (fontHeight != 8 && fontHeight != 16) {
+            showError(`Font data error!`);
+            return;
+        }
         fontInfo.height = fontHeight;
 
         for (let i = 0; i <= 255; i++) {
@@ -123,13 +139,13 @@ function saveFont() {
     const blob = new Blob([byteArray], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    
+
     link.href = url;
     link.download = 'FONT.RAW';
-    
+
     document.body.appendChild(link);
     link.click();
-    
+
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }

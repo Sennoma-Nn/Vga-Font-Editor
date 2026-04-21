@@ -36,6 +36,13 @@ body {
     user-select: none;
 }
 
+.helpText {
+    line-height: 0px;
+    margin: 16px;
+    padding: 16px;
+    color: var(--vga-dark-gray);
+}
+
 .menuBar {
     background-color: var(--vga-white);
     width: 100%;

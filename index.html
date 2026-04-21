@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vga Font Editor</title>
+    <title>Vga Font Editor Online</title>
 </head>
 
 <link rel="stylesheet" type="text/css" href="styles/styles.css">
@@ -18,7 +18,7 @@
         <button class="menuButton" onclick="openFont()">Open</button>
         <button class="menuButton" onclick="saveFont()">Save</button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
-        <div id="askIsAbandon"></div>
+        <div id="warningArea"></div>
     </div>
 
     <div class="editor">
@@ -27,6 +27,20 @@
         <div class="canvasArea">
             <div class="charTitle" id="charTitle"></div>
             <div class="pixelCanvas" id="pixelCanvas"></div>
+            <div class="helpText">
+                <p>╔═ Help ══════════════════╗</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                <p>║ Click the [Edit] button ║</p>
+                <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                <p>║ Left-click to draw,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                <p>║ right-click to erase.&nbsp;&nbsp;&nbsp;║</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                <p>╚═════════════════════════╝</p>
+            </div>
         </div>
     </div>
 </body>
