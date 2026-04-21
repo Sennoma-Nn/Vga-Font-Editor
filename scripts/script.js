@@ -34,20 +34,20 @@ async function resetCharsData(h) {
         return;
     }
 
-    const proceed = await warningArea();
+    const proceed = await askIsAbandon();
     if (!proceed) return;
 
     setEmptyData(h);
 }
 
-function warningArea() {
+function askIsAbandon() {
     return new Promise((resolve) => {
         const abandonDiv = document.getElementById('warningArea');
 
         abandonDiv.innerHTML = `
             <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
-            <button class="menuButton" id="confirmYes">Yes</button>
-            <button class="menuButton" id="confirmNo">No</button>
+            <button class="menuButton" id="confirmYes"><bright>Y</bright>es</button>
+            <button class="menuButton" id="confirmNo"><bright>N</bright>o</button>
         `;
 
         const handleChoice = (choice) => {
@@ -76,7 +76,7 @@ async function openFont() {
         return;
     }
 
-    const proceed = await warningArea();
+    const proceed = await askIsAbandon();
     if (!proceed) return;
 
     const fileInput = document.getElementById('OpenFontInput');
@@ -159,16 +159,16 @@ function updateTitle(isWarning = false) {
     const index = editorData.index;
     const charTitle = document.getElementById('charTitle');
     const actionButtons = !editorData.isDirty
-        ? `<button class="TitleButton" onclick="editChar()">[Edit]</button>`
+        ? `|<button class="TitleButton" onclick="editChar()"><bright>E</bright>dit</button>`
         : `
             |
             <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
-            <button class="TitleButton" onclick="saveChanges()">[Y]</button>
-            <button class="TitleButton" onclick="undoChanges()">[N]</button>
+            <button class="TitleButton" onclick="saveChanges()"><bright>Y</bright>es</button>
+            <button class="TitleButton" onclick="undoChanges()"><bright>N</bright>o</button>
             |
-            <button class="TitleButton" onclick="editCopy()">[Copy]</button>
-            <button class="TitleButton" onclick="editPaste()">[Paste]</button>
-            <button class="TitleButton" onclick="editReverse()">[Reverse]</button>
+            <button class="TitleButton" onclick="editCopy()"><bright>C</bright>opy</button>
+            <button class="TitleButton" onclick="editPaste()"><bright>P</bright>aste</button>
+            <button class="TitleButton" onclick="editReverse()"><bright>R</bright>everse</button>
         `;
 
     charTitle.innerHTML = `
@@ -288,4 +288,21 @@ function undoChanges() {
     editorData.changedData = "";
     renderCanvas();
     updateTitle();
+}
+
+document.addEventListener('keydown', (e) => {
+    const k = e.key.toUpperCase();
+    const abtn = document.querySelectorAll('button');
+    for (const btn of abtn) {
+        if (btn.offsetParent !== null && getBrightKey(btn) === k) {
+            btn.click();
+            e.preventDefault();
+            return;
+        }
+    }
+});
+
+function getBrightKey(button) {
+    const bb = button.querySelector('bright');
+    return bb ? bb.innerText.trim().toUpperCase() : null;
 }

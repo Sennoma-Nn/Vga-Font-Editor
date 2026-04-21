@@ -31,8 +31,8 @@ body {
     font-family: PC3K_Alt;
     font-size: 16px;
     color: var(--vga-black);
-    min-width: 640px;
-    min-height: 480px;
+    min-width: 1280px;
+    min-height: 720px;
     user-select: none;
 }
 
@@ -45,12 +45,20 @@ body {
     width: fit-content
 }
 
+.helpText bright {
+    color: var(--vga-brown)
+}
+
 .menuBar {
     background-color: var(--vga-white);
     width: 100%;
     height: 32px;
     display: flex;
     line-height: 32px;
+}
+
+bright {
+    color: var(--vga-yellow)
 }
 
 .menuButton {
@@ -66,6 +74,10 @@ body {
     margin: 0px;
     font: inherit;
     color: var(--vga-black);
+}
+
+.menuButton bright {
+    color: var(--vga-brown)
 }
 
 .menuButton:hover {
@@ -141,6 +153,7 @@ body {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .charArea::-webkit-scrollbar {
@@ -183,6 +196,10 @@ body {
 .TitleButton:active {
     background-color: var(--vga-white);
     color: var(--vga-black)
+}
+
+.TitleButton:active bright {
+    color: var(--vga-brown)
 }
 
 .pixelCanvas {

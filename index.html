@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vga Font Editor Online</title>
+    <title>VGA FONT EDITOR ONLINE</title>
+    <link rel="shortcut icon" href="imgs/icon.svg" >
 </head>
 
 <link rel="stylesheet" type="text/css" href="styles/styles.css">
@@ -13,10 +14,10 @@
 <body>
     <input type="file" id="OpenFontInput" style="display: none;" />
     <div class="menuBar">
-        <button class="menuButton" onclick="resetCharsData(16)">New (8x16)</button>
-        <button class="menuButton" onclick="resetCharsData(8)">New (8x8)</button>
-        <button class="menuButton" onclick="openFont()">Open</button>
-        <button class="menuButton" onclick="saveFont()">Save</button>
+        <button class="menuButton" onclick="resetCharsData(16)">New (8x1<bright>6</bright>)</button>
+        <button class="menuButton" onclick="resetCharsData(8)">New (8x<bright>8</bright>)</button>
+        <button class="menuButton" onclick="openFont()"><bright>O</bright>pen</button>
+        <button class="menuButton" onclick="saveFont()"><bright>S</bright>ave</button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
         <div id="warningArea"></div>
     </div>
@@ -28,18 +29,18 @@
             <div class="charTitle" id="charTitle"></div>
             <div class="pixelCanvas" id="pixelCanvas"></div>
             <div class="helpText">
-                <p>╔═ Help ══════════════════╗</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <p>╔═ Help ════════════════╗</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║ Click the [Edit] button ║</p>
-                <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <p>║ Click the <bright>E</bright>dit button ║</p>
+                <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp; ║</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║ Left-click to draw,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║ right-click to erase.&nbsp;&nbsp;&nbsp;║</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <p>║ Left-click to draw,&nbsp;&nbsp; ║</p>
+                <p>║ right-click to erase. ║</p>
+                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>╚═════════════════════════╝</p>
+                <p>╚═══════════════════════╝</p>
             </div>
         </div>
     </div>
@@ -53,7 +54,7 @@
         buttonsHTML += `
             <button id="openChar${i}" onclick="openChar(${i})" class="charButton">
                 <div id="prev${i}" class="charPreview"></div>
-                <span class="charIndex">${i}</span>
+                <span class="charIndex">${i.toString(16).padStart(2, '0').toUpperCase()}</span>
             </button>
         `;
     }
