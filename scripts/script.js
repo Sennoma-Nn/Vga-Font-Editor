@@ -3,12 +3,15 @@ let fontInfo = {
     data: []
 };
 
-let editingIndex = 0
+let editorData = {
+    index: 0,
+    changedData: "",
+    isDirty: false
+}
 
-resetCharsData(16);
-console.log(fontInfo);
+setEmptyData(16);
 
-function resetCharsData(h) {
+function setEmptyData(h) {
     fontInfo.height = h;
 
     let emptyData = ((h) => {
@@ -19,11 +22,52 @@ function resetCharsData(h) {
         fontInfo.data[i] = emptyData;
     }
 
+    editorData.isDirty = false;
     updateAllPreviews();
-    openChar(editingIndex);
+    openChar(editorData.index);
+}
+
+async function resetCharsData(h) {
+    if (editorData.isDirty) {
+        updateTitle(editorData.index, true);
+        return;
+    }
+
+    const proceed = await askIsAbandon();
+    if (!proceed) return;
+
+    setEmptyData(h);
+}
+
+function askIsAbandon() {
+    return new Promise((resolve) => {
+        const abandonDiv = document.getElementById('askIsAbandon');
+
+        abandonDiv.innerHTML = `
+            <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
+            <button class="menuButton" id="confirmYes">Yes</button>
+            <button class="menuButton" id="confirmNo">No</button>
+        `;
+
+        const handleChoice = (choice) => {
+            abandonDiv.innerHTML = '';
+            resolve(choice);
+        };
+
+        document.getElementById('confirmYes').onclick = () => handleChoice(true);
+        document.getElementById('confirmNo').onclick = () => handleChoice(false);
+    });
 }
 
 async function openFont() {
+    if (editorData.isDirty) {
+        updateTitle(editorData.index, true);
+        return;
+    }
+
+    const proceed = await askIsAbandon();
+    if (!proceed) return;
+
     const fileInput = document.getElementById('OpenFontInput');
     fileInput.click();
 
@@ -40,10 +84,10 @@ async function openFont() {
             result += uint8[i].toString(2).padStart(8, '0');
         }
 
-        charLen = result.length / 256;
+        let charLen = result.length / 256;
         if (charLen % 1 !== 0) return;
 
-        fontHeight = charLen / 8;
+        let fontHeight = charLen / 8;
         if (fontHeight != 8 && fontHeight != 16) return;
         fontInfo.height = fontHeight;
 
@@ -54,37 +98,99 @@ async function openFont() {
         }
 
         updateAllPreviews();
-        openChar(editingIndex);
+        openChar(editorData.index);
         fileInput.value = '';
     };
 }
 
 function saveFont() {
+    if (editorData.isDirty) {
+        updateTitle(editorData.index, true);
+        return;
+    }
 
+    const totalBytes = 256 * fontInfo.height;
+    const byteArray = new Uint8Array(totalBytes);
+
+    for (let i = 0; i < 256; i++) {
+        const charData = fontInfo.data[i];
+        for (let row = 0; row < fontInfo.height; row++) {
+            const rowString = charData.substring(row * 8, (row + 1) * 8);
+            byteArray[i * fontInfo.height + row] = parseInt(rowString, 2);
+        }
+    }
+
+    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    link.href = url;
+    link.download = 'FONT.RAW';
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 function debug() {
     console.log(fontInfo);
 }
 
-function openChar(index) {
-    editingIndex = index;
+function updateTitle(index, isWarning = false) {
+    const charTitle = document.getElementById('charTitle');
+    const actionButtons = !editorData.isDirty
+        ? `<button class="TitleButton" onclick="editChar()">[Edit]</button>`
+        : ` <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
+            <button class="TitleButton" onclick="saveChanges()">[Y]</button>
+            <button class="TitleButton" onclick="undoChanges()">[N]</button>`;
 
+    charTitle.innerHTML = `
+        <span>&nbsp;#${index}: </span><span style="color: var(--vga-light-gray)">${charDescriptions[index]}</span>
+        ${actionButtons}
+    `;
+}
+
+async function openChar(index) {
+    if (editorData.isDirty) {
+        updateTitle(editorData.index, true);
+        return;
+    }
+
+    const lastActive = document.querySelector('.charButton.active');
+    if (lastActive) {
+        lastActive.classList.remove('active');
+    }
+
+    const currentBtn = document.getElementById(`openChar${index}`);
+    if (currentBtn) {
+        currentBtn.classList.add('active');
+    }
+
+    editorData.index = index;
+    renderCanvas();
+}
+
+function renderCanvas() {
+    const index = editorData.index;
     const canvas = document.getElementById('pixelCanvas');
     const h = fontInfo.height;
-    const charData = fontInfo.data[index];
+    const charData = editorData.isDirty ? editorData.changedData : fontInfo.data[index];
 
-    const charTitle = document.getElementById('charTitle');
-    charTitle.innerHTML = `<span>&nbsp;#${index}: </sapn><span style="color: var(--vga-light-gray)">${charDescriptions[index]}</span>`
+    updateTitle(index);
 
+    canvas.oncontextmenu = (e) => e.preventDefault();
     canvas.style.gridTemplateRows = `repeat(${h}, 32px)`;
 
     let pixelsHTML = '';
     for (let i = 0; i < charData.length; i++) {
         const color = Number(charData[i]) ? 'var(--vga-black)' : 'var(--vga-white)';
-        pixelsHTML += `<div class="pixel" style="background-color: ${color}"></div>`;
+        pixelsHTML += `<div class="pixel" 
+            style="background-color: ${color}" 
+            onmousedown="pixelInput(${i}, event)" 
+            onmouseenter="pixelInput(${i}, event)"></div>`;
     }
-
     canvas.innerHTML = pixelsHTML;
 }
 
@@ -106,4 +212,37 @@ function updateAllPreviews() {
         }
         preview.innerHTML = pixelsHTML;
     }
+}
+
+function pixelInput(i, e) {
+    if (!editorData.isDirty) return;
+    if (e.buttons !== 1 && e.buttons !== 2) return;
+
+    const newValue = e.buttons === 1 ? "1" : "0";
+
+    let dataArr = editorData.changedData.split('');
+    dataArr[i] = newValue;
+    editorData.changedData = dataArr.join('');
+
+    e.target.style.backgroundColor = newValue === "1" ? 'var(--vga-black)' : 'var(--vga-white)';
+}
+
+function editChar() {
+    editorData.isDirty = true;
+    editorData.changedData = fontInfo.data[editorData.index];
+    renderCanvas();
+}
+
+function saveChanges() {
+    fontInfo.data[editorData.index] = editorData.changedData;
+    editorData.isDirty = false;
+
+    updateAllPreviews();
+    renderCanvas();
+}
+
+function undoChanges() {
+    editorData.isDirty = false;
+    editorData.changedData = "";
+    renderCanvas();
 }

@@ -11,13 +11,14 @@
 <link rel="stylesheet" type="text/css" href="styles/styles.css">
 
 <body>
+    <input type="file" id="OpenFontInput" style="display: none;" />
     <div class="menuBar">
         <button class="menuButton" onclick="resetCharsData(16)">New (8x16)</button>
         <button class="menuButton" onclick="resetCharsData(8)">New (8x8)</button>
-        <input type="file" id="OpenFontInput" style="display: none;" />
         <button class="menuButton" onclick="openFont()">Open</button>
         <button class="menuButton" onclick="saveFont()">Save</button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
+        <div id="askIsAbandon"></div>
     </div>
 
     <div class="editor">

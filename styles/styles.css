@@ -31,6 +31,9 @@ body {
     font-family: PC3K_Alt;
     font-size: 16px;
     color: var(--vga-black);
+    min-width: 640px;
+    min-height: 480px;
+    user-select: none;
 }
 
 .menuBar {
@@ -38,6 +41,7 @@ body {
     width: 100%;
     height: 32px;
     display: flex;
+    line-height: 32px;
 }
 
 .menuButton {
@@ -84,12 +88,14 @@ body {
     overflow: hidden;
 }
 
-.charButton:hover {
+.charButton:hover,
+.charButton.active {
     background-color: var(--vga-light-gray);
     color: var(--vga-black);
 }
 
-.charButton:active {
+.charButton:active,
+.charButton.active:active {
     background-color: var(--vga-white);
     color: var(--vga-black);
 }
@@ -139,6 +145,30 @@ body {
     height: 32px;
     line-height: 32px;
     color: var(--vga-white);
+}
+
+.TitleButton {
+    height: 100%;
+    font-family: PC3K_Alt;
+    line-height: 100%;
+    background: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0px 16px;
+    margin: 0px;
+    font: inherit;
+    color: var(--vga-white);
+}
+
+.TitleButton:hover {
+    background-color: var(--vga-light-blue);
+}
+
+.TitleButton:active {
+    background-color: var(--vga-white);
+    color: var(--vga-black)
 }
 
 .pixelCanvas {
