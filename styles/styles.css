@@ -19,7 +19,7 @@
 
 @font-face {
     font-family: 'PC3K_Alt';
-    src: url('/font/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
+    src: url('../font/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
 }
 
 html,
