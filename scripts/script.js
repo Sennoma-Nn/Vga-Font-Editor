@@ -44,6 +44,11 @@ function askIsAbandon() {
     return new Promise((resolve) => {
         const abandonDiv = document.getElementById('warningArea');
 
+        if (abandonDiv.querySelector('.menuButton')) {
+            resolve(false);
+            return;
+        }
+
         abandonDiv.innerHTML = `
             <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
             <button class="menuButton" id="confirmYes"><bright>Y</bright>es</button>
