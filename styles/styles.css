@@ -139,7 +139,12 @@ body {
     background-color: var(--vga-dark-gray);
     width: 64px;
     height: 100%;
+    overflow-x: hidden;
     overflow-y: auto;
+}
+
+.charArea::-webkit-scrollbar {
+    width: 0 !important
 }
 
 .canvasArea {
