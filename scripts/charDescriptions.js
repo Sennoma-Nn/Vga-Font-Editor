@@ -1,5 +1,5 @@
 const charDescriptions = [
-    "  - NUL (Null)", "☺ - SOH (Start of Heading)", "☻ - STX (Start of Text)", "♥ - ETX (End of Text)",
+    "NUL (Null)", "☺ - SOH (Start of Heading)", "☻ - STX (Start of Text)", "♥ - ETX (End of Text)",
     "♦ - EOT (End of Transmission)", "♣ - ENQ (Enquiry)", "♠ - ACK (Acknowledgement)", "• - BEL (Bell)",
     "◘ - BS (Backspace)", "○ - HT (Horizontal Tab)", "◙ - LF (Line Feed)", "♂ - VT (Vertical Tab)",
     "♀ - FF (Form Feed)", "♪ - CR (Carriage Return)", "♫ - SO (Shift Out)", "☼ - SI (Shift In)",
@@ -62,5 +62,5 @@ const charDescriptions = [
     "≡ - Identical to", "± - Plus-minus sign", "≥ - Greater-than or equal to", "≤ - Less-than or equal to",
     "⌠ - Top half integral", "⌡ - Bottom half integral", "÷ - Division sign", "≈ - Almost equal to",
     "° - Degree sign", "∙ - Bullet operator", "· - Middle dot", "√ - Square root",
-    "ⁿ - Superscript Latin Small letter n", "² - Superscript two", "■ - Black small square", "  - Non-breaking space"
+    "ⁿ - Superscript Latin Small letter n", "² - Superscript two", "■ - Black small square", "Non-breaking space"
 ];
