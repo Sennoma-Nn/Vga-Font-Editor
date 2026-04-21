@@ -6,7 +6,8 @@ let fontInfo = {
 let editorData = {
     index: 0,
     changedData: "",
-    isDirty: false
+    isDirty: false,
+    clipboard: ""
 }
 
 setEmptyData(16);
@@ -29,7 +30,7 @@ function setEmptyData(h) {
 
 async function resetCharsData(h) {
     if (editorData.isDirty) {
-        updateTitle(editorData.index, true);
+        updateTitle(true);
         return;
     }
 
@@ -71,7 +72,7 @@ function showError(message) {
 
 async function openFont() {
     if (editorData.isDirty) {
-        updateTitle(editorData.index, true);
+        updateTitle(true);
         return;
     }
 
@@ -121,7 +122,7 @@ async function openFont() {
 
 function saveFont() {
     if (editorData.isDirty) {
-        updateTitle(editorData.index, true);
+        updateTitle(true);
         return;
     }
 
@@ -154,13 +155,21 @@ function debug() {
     console.log(fontInfo);
 }
 
-function updateTitle(index, isWarning = false) {
+function updateTitle(isWarning = false) {
+    const index = editorData.index;
     const charTitle = document.getElementById('charTitle');
     const actionButtons = !editorData.isDirty
         ? `<button class="TitleButton" onclick="editChar()">[Edit]</button>`
-        : ` <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
+        : `
+            |
+            <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
             <button class="TitleButton" onclick="saveChanges()">[Y]</button>
-            <button class="TitleButton" onclick="undoChanges()">[N]</button>`;
+            <button class="TitleButton" onclick="undoChanges()">[N]</button>
+            |
+            <button class="TitleButton" onclick="editCopy()">[Copy]</button>
+            <button class="TitleButton" onclick="editPaste()">[Paste]</button>
+            <button class="TitleButton" onclick="editReverse()">[Reverse]</button>
+        `;
 
     charTitle.innerHTML = `
         <span>&nbsp;#${index}: </span><span style="color: var(--vga-light-gray)">${charDescriptions[index]}</span>
@@ -168,9 +177,25 @@ function updateTitle(index, isWarning = false) {
     `;
 }
 
+function editCopy() {
+    editorData.clipboard = editorData.changedData;
+}
+
+function editPaste() {
+    editorData.changedData = editorData.clipboard;
+    renderCanvas();
+}
+
+const reverse = data => data.replace(/[01]/g, (match) => (match === '1' ? '0' : '1'));
+
+function editReverse() {
+    editorData.changedData = reverse(editorData.changedData);
+    renderCanvas();
+}
+
 async function openChar(index) {
     if (editorData.isDirty) {
-        updateTitle(editorData.index, true);
+        updateTitle(true);
         return;
     }
 
@@ -186,6 +211,7 @@ async function openChar(index) {
 
     editorData.index = index;
     renderCanvas();
+    updateTitle();
 }
 
 function renderCanvas() {
@@ -193,8 +219,6 @@ function renderCanvas() {
     const canvas = document.getElementById('pixelCanvas');
     const h = fontInfo.height;
     const charData = editorData.isDirty ? editorData.changedData : fontInfo.data[index];
-
-    updateTitle(index);
 
     canvas.oncontextmenu = (e) => e.preventDefault();
     canvas.style.gridTemplateRows = `repeat(${h}, 32px)`;
@@ -247,6 +271,7 @@ function editChar() {
     editorData.isDirty = true;
     editorData.changedData = fontInfo.data[editorData.index];
     renderCanvas();
+    updateTitle();
 }
 
 function saveChanges() {
@@ -255,10 +280,12 @@ function saveChanges() {
 
     updateAllPreviews();
     renderCanvas();
+    updateTitle();
 }
 
 function undoChanges() {
     editorData.isDirty = false;
     editorData.changedData = "";
     renderCanvas();
+    updateTitle();
 }

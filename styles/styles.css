@@ -38,9 +38,11 @@ body {
 
 .helpText {
     line-height: 0px;
-    margin: 16px;
-    padding: 16px;
-    color: var(--vga-dark-gray);
+    margin: 32px;
+    padding: 8px 16px;
+    background-color: var(--vga-white);
+    color: var(--vga-black);
+    width: fit-content
 }
 
 .menuBar {
@@ -182,6 +184,7 @@ body {
     display: grid;
     grid-template-columns: repeat(8, 32px);
     grid-template-rows: repeat(16, 32px);
+    width: fit-content
 }
 
 .pixel {
