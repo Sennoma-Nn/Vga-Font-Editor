@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vga Font Editor</title>
+</head>
+
+<link rel="stylesheet" type="text/css" href="styles/styles.css">
+
+<body>
+    <div class="menuBar">
+        <button class="menuButton" onclick="resetCharsData(16)">New (8x16)</button>
+        <button class="menuButton" onclick="resetCharsData(8)">New (8x8)</button>
+        <input type="file" id="OpenFontInput" style="display: none;" />
+        <button class="menuButton" onclick="openFont()">Open</button>
+        <button class="menuButton" onclick="saveFont()">Save</button>
+        <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
+    </div>
+
+    <div class="editor">
+        <div class="charArea" id="charArea"></div>
+
+        <div class="canvasArea">
+            <div class="charTitle" id="charTitle"></div>
+            <div class="pixelCanvas" id="pixelCanvas"></div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const charArea = document.getElementById('charArea');
+    let buttonsHTML = '';
+
+    for (let i = 0; i < 256; i++) {
+        buttonsHTML += `
+            <button id="openChar${i}" onclick="openChar(${i})" class="charButton">
+                <div id="prev${i}" class="charPreview"></div>
+                <span class="charIndex">${i}</span>
+            </button>
+        `;
+    }
+    charArea.insertAdjacentHTML('beforeend', buttonsHTML);
+</script>
+
+<script src="scripts/charDescriptions.js"></script>
+<script src="scripts/script.js"></script>
+
+</html>

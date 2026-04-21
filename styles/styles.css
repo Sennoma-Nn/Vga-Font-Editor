@@ -1,0 +1,154 @@
+:root {
+    --vga-black: #000000;
+    --vga-blue: #0000AA;
+    --vga-green: #00AA00;
+    --vga-cyan: #00AAAA;
+    --vga-red: #AA0000;
+    --vga-magenta: #AA00AA;
+    --vga-brown: #AA5500;
+    --vga-light-gray: #AAAAAA;
+    --vga-dark-gray: #555555;
+    --vga-light-blue: #5555FF;
+    --vga-light-green: #55FF55;
+    --vga-light-cyan: #55FFFF;
+    --vga-light-red: #FF5555;
+    --vga-light-magenta: #FF55FF;
+    --vga-yellow: #FFFF55;
+    --vga-white: #FFFFFF;
+}
+
+@font-face {
+    font-family: 'PC3K_Alt';
+    src: url('/font/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
+}
+
+html,
+body {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    font-family: PC3K_Alt;
+    font-size: 16px;
+    color: var(--vga-black);
+}
+
+.menuBar {
+    background-color: var(--vga-white);
+    width: 100%;
+    height: 32px;
+    display: flex;
+}
+
+.menuButton {
+    height: 100%;
+    font-family: PC3K_Alt;
+    line-height: 100%;
+    background: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0px 16px;
+    margin: 0px;
+    font: inherit;
+    color: var(--vga-black);
+}
+
+.menuButton:hover {
+    background-color: var(--vga-light-gray);
+}
+
+.menuButton:active {
+    background-color: var(--vga-dark-gray);
+}
+
+.charButton {
+    height: 80px;
+    width: 64px;
+    font-family: PC3K_Alt;
+    line-height: 80px;
+    background: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0px;
+    margin: 0px;
+    font: inherit;
+    color: var(--vga-white);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.charButton:hover {
+    background-color: var(--vga-light-gray);
+    color: var(--vga-black);
+}
+
+.charButton:active {
+    background-color: var(--vga-white);
+    color: var(--vga-black);
+}
+
+.charPreview {
+    position: absolute;
+    top: 14px;
+    display: grid;
+    grid-template-columns: repeat(8, 2px);
+}
+
+.prevPixel {
+    width: 2px;
+    height: 2px;
+    background-color: currentColor;
+}
+
+.charIndex {
+    line-height: 16px;
+    position: absolute;
+    bottom: 14px;
+    padding: 0 2px;
+}
+
+.editor {
+    width: 100%;
+    height: calc(100% - 32px);
+    display: flex;
+}
+
+.charArea {
+    background-color: var(--vga-dark-gray);
+    width: 64px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.canvasArea {
+    background-color: var(--vga-light-gray);
+    width: calc(100% - 64px);
+    height: 100%;
+}
+
+.charTitle {
+    background-color: var(--vga-blue);
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    color: var(--vga-white);
+}
+
+.pixelCanvas {
+    display: grid;
+    grid-template-columns: repeat(8, 32px);
+    grid-template-rows: repeat(16, 32px);
+}
+
+.pixel {
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+}
