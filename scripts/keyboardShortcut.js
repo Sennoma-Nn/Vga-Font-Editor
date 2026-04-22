@@ -1,32 +1,39 @@
+let activePressedBtn = null;
+
 document.addEventListener('keydown', (e) => {
     if (e.repeat) return;
 
-    const k = key2Symbol(e.key.toUpperCase());
-    const abtn = document.querySelectorAll('button');
+    if (activePressedBtn) {
+        const prevBtn = activePressedBtn;
+        activePressedBtn = null;
+        prevBtn.classList.remove('pressed');
+        prevBtn.click();
+    }
 
-    for (const btn of abtn) {
-        if (btn.offsetParent !== null && getBrightKey(btn) === k) {
-            btn.classList.add('pressed');
-            activePressedBtn = btn;
-        }
+    const k = key2Symbol(e.key.toUpperCase());
+
+    const btn = Array.from(document.querySelectorAll('button'))
+        .find(b => b.offsetParent !== null && getBrightKey(b) === k);
+
+    if (btn) {
+        btn.classList.add('pressed');
+        activePressedBtn = btn;
     }
 });
 
 document.addEventListener('keyup', (e) => {
     const k = key2Symbol(e.key.toUpperCase());
 
-    const abtn = document.querySelectorAll('button');
-    for (const btn of abtn) {
-        if (getBrightKey(btn) === k) {
-            btn.classList.remove('pressed');
-
-            if (btn === activePressedBtn) {
-                btn.click();
-                e.preventDefault();
-            }
-        }
+    if (activePressedBtn && getBrightKey(activePressedBtn) === k) {
+        const btn = activePressedBtn;
+        activePressedBtn = null;
+        btn.classList.remove('pressed');
+        btn.click();
+    } else {
+        document.querySelectorAll('button').forEach(btn => {
+            if (getBrightKey(btn) === k) btn.classList.remove('pressed');
+        });
     }
-    activePressedBtn = null;
 });
 
 function getBrightKey(button) {
