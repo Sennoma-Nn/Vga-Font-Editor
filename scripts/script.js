@@ -11,6 +11,7 @@ let editorData = {
 }
 
 const isEditing = () => editorData.mode !== 'normal';
+const isDirty = () => isEditing() && editorData.changedData !== fontInfo.data[editorData.index];
 
 const getEmptyData = () => "0".repeat(8 * fontInfo.height)
 
@@ -31,10 +32,12 @@ function setEmptyData(h) {
 }
 
 async function resetCharsData(h) {
-    if (isEditing()) {
+    if (isDirty()) {
         updateTitle(true);
         return;
     }
+
+    editorData.mode = 'normal';
 
     const proceed = await askIsAbandon();
     if (!proceed) return;
@@ -78,10 +81,12 @@ function showError(message) {
 }
 
 async function openFont() {
-    if (isEditing()) {
+    if (isDirty()) {
         updateTitle(true);
         return;
     }
+
+    editorData.mode = 'normal';
 
     const proceed = await askIsAbandon();
     if (!proceed) return;
@@ -128,10 +133,12 @@ async function openFont() {
 }
 
 function saveFont() {
-    if (isEditing()) {
+    if (isDirty()) {
         updateTitle(true);
         return;
     }
+
+    editorData.mode = 'normal';
 
     const totalBytes = 256 * fontInfo.height;
     const byteArray = new Uint8Array(totalBytes);
@@ -200,7 +207,7 @@ function updateTitle(isWarning = false) {
                 &nbsp;|&nbsp;
                 <button class="TitleButton" onclick="layerCopy()"><bright>C</bright>opy</button>
                 <button class="TitleButton" onclick="layerPaste()"><bright>P</bright>aste</button>
-                <button class="TitleButton" onclick="layerClear()">Cl<bright>e</bright>ar</button>
+                <button class="TitleButton" onclick="layerClear()">Cle<bright>a</bright>r</button>
             `;
             break;
         case 'transform':
@@ -359,10 +366,12 @@ function transformReverse() {
 }
 
 async function openChar(index) {
-    if (isEditing()) {
+    if (isDirty()) {
         updateTitle(true);
         return;
     }
+
+    editorData.mode = 'normal';
 
     const lastActive = document.querySelector('.charButton.active');
     if (lastActive) {
@@ -399,23 +408,24 @@ function renderCanvas() {
     canvas.innerHTML = pixelsHTML;
 }
 
-function updateAllPreviews() {
+function updatePreviews(i) {
+    const preview = document.getElementById(`prev${i}`);
+    const charData = fontInfo.data[i];
     const h = fontInfo.height;
 
+    preview.style.gridTemplateRows = `repeat(${h}, 2px)`;
+
+    let pixelsHTML = '';
+    for (let j = 0; j < charData.length; j++) {
+        const isVisible = Number(charData[j]) ? '' : 'style="background-color: transparent"';
+        pixelsHTML += `<div class="prevPixel" ${isVisible}></div>`;
+    }
+    preview.innerHTML = pixelsHTML;
+}
+
+function updateAllPreviews() {
     for (let i = 0; i < 256; i++) {
-        const preview = document.getElementById(`prev${i}`);
-        if (!preview) continue;
-
-        const charData = fontInfo.data[i];
-
-        preview.style.gridTemplateRows = `repeat(${h}, 2px)`;
-
-        let pixelsHTML = '';
-        for (let j = 0; j < charData.length; j++) {
-            const isVisible = Number(charData[j]) ? '' : 'style="background-color: transparent"';
-            pixelsHTML += `<div class="prevPixel" ${isVisible}></div>`;
-        }
-        preview.innerHTML = pixelsHTML;
+        updatePreviews(i);
     }
 }
 
@@ -443,7 +453,7 @@ function saveChanges() {
     fontInfo.data[editorData.index] = editorData.changedData;
     editorData.mode = 'normal';
 
-    updateAllPreviews();
+    updatePreviews(editorData.index);
     renderCanvas();
     updateTitle();
 }

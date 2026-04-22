@@ -1,13 +1,32 @@
 document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+
     const k = key2Symbol(e.key.toUpperCase());
     const abtn = document.querySelectorAll('button');
+
     for (const btn of abtn) {
         if (btn.offsetParent !== null && getBrightKey(btn) === k) {
-            btn.click();
-            e.preventDefault();
-            return;
+            btn.classList.add('pressed');
+            activePressedBtn = btn;
         }
     }
+});
+
+document.addEventListener('keyup', (e) => {
+    const k = key2Symbol(e.key.toUpperCase());
+
+    const abtn = document.querySelectorAll('button');
+    for (const btn of abtn) {
+        if (getBrightKey(btn) === k) {
+            btn.classList.remove('pressed');
+
+            if (btn === activePressedBtn) {
+                btn.click();
+                e.preventDefault();
+            }
+        }
+    }
+    activePressedBtn = null;
 });
 
 function getBrightKey(button) {

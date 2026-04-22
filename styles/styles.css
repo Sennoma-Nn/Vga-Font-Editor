@@ -79,6 +79,10 @@ bright {
     background-color: var(--vga-dark-gray);
 }
 
+.menuButton.pressed {
+    background-color: var(--vga-dark-gray);
+}
+
 .charButton {
     height: 80px;
     width: 64px;
@@ -210,6 +214,15 @@ bright {
 
 .TitleButton:active bright {
     color: var(--vga-brown)
+}
+
+.TitleButton.pressed {
+    background-color: var(--vga-white);
+    color: var(--vga-black);
+}
+
+.TitleButton.pressed bright {
+    color: var(--vga-brown);
 }
 
 .pixelCanvas {
