@@ -31,18 +31,9 @@ body {
     font-family: PC3K_Alt;
     font-size: 16px;
     color: var(--vga-black);
-    min-width: 1280px;
-    min-height: 720px;
+    min-width: 1700px;
+    min-height: 640px;
     user-select: none;
-}
-
-.helpText {
-    line-height: 0px;
-    margin: 32px;
-    padding: 8px 16px;
-    background-color: var(--vga-white);
-    color: var(--vga-black);
-    width: fit-content
 }
 
 .helpText bright {
@@ -166,12 +157,31 @@ bright {
     height: 100%;
 }
 
+.canvarsAndHelp {
+    display: flex;
+}
+
+.helpText {
+    line-height: 16px;
+    margin: 32px;
+    padding: 16px 16px;
+    background-color: var(--vga-white);
+    color: var(--vga-black);
+    width: fit-content;
+    height: fit-content;
+}
+
+.helpText p {
+    margin: 0;
+}
+
 .charTitle {
     background-color: var(--vga-blue);
     width: 100%;
     height: 32px;
     line-height: 32px;
     color: var(--vga-white);
+    display: flex;
 }
 
 .TitleButton {

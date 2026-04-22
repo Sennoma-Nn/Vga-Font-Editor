@@ -5,31 +5,33 @@ let fontInfo = {
 
 let editorData = {
     index: 0,
-    changedData: "",
-    isDirty: false,
-    clipboard: ""
+    changedData: '',
+    mode: 'normal',
+    clipboard: ''
 }
+
+const isEditing = () => editorData.mode !== 'normal';
+
+const getEmptyData = () => "0".repeat(8 * fontInfo.height)
 
 setEmptyData(16);
 
 function setEmptyData(h) {
     fontInfo.height = h;
 
-    let emptyData = ((h) => {
-        return "0".repeat(8 * h);
-    })(h);
+    const emptyData = getEmptyData();
 
     for (let i = 0; i <= 255; i++) {
         fontInfo.data[i] = emptyData;
     }
 
-    editorData.isDirty = false;
+    editorData.mode = 'normal';
     updateAllPreviews();
     openChar(editorData.index);
 }
 
 async function resetCharsData(h) {
-    if (editorData.isDirty) {
+    if (isEditing()) {
         updateTitle(true);
         return;
     }
@@ -76,7 +78,7 @@ function showError(message) {
 }
 
 async function openFont() {
-    if (editorData.isDirty) {
+    if (isEditing()) {
         updateTitle(true);
         return;
     }
@@ -126,7 +128,7 @@ async function openFont() {
 }
 
 function saveFont() {
-    if (editorData.isDirty) {
+    if (isEditing()) {
         updateTitle(true);
         return;
     }
@@ -160,46 +162,204 @@ function debug() {
     console.log(fontInfo);
 }
 
+function truncateText(text) {
+    if (text.length > 32) {
+        return text.slice(0, 32).trim() + '...';
+    }
+    return text;
+}
+
 function updateTitle(isWarning = false) {
     const index = editorData.index;
     const charTitle = document.getElementById('charTitle');
-    const actionButtons = !editorData.isDirty
-        ? `|<button class="TitleButton" onclick="editChar()"><bright>E</bright>dit</button>`
-        : `
-            |
-            <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
-            <button class="TitleButton" onclick="saveChanges()"><bright>Y</bright>es</button>
-            <button class="TitleButton" onclick="undoChanges()"><bright>N</bright>o</button>
-            |
-            <button class="TitleButton" onclick="editCopy()"><bright>C</bright>opy</button>
-            <button class="TitleButton" onclick="editPaste()"><bright>P</bright>aste</button>
-            <button class="TitleButton" onclick="editReverse()"><bright>R</bright>everse</button>
-        `;
+    const descriptions = truncateText(charDescriptions[index]);
+    const saveTexts = isEditing() ? `
+        &nbsp;|&nbsp;&nbsp;
+        <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
+        &nbsp;
+        <button class="TitleButton" onclick="saveChanges()"><bright>Y</bright>es</button>
+        <button class="TitleButton" onclick="undoChanges()"><bright>N</bright>o</button>
+    ` : '';
+
+    let actionButtons;
+
+    switch (editorData.mode) {
+        case 'normal':
+            actionButtons = `<button class="TitleButton" onclick="editChar()"><bright>E</bright>dit</button>`;
+            break;
+        case 'edit':
+            actionButtons = `
+                <button class="TitleButton" onclick="editLayer()"><bright>L</bright>ayer</button>
+                <button class="TitleButton" onclick="editTransform()"><bright>T</bright>ransform</button>
+                <button class="TitleButton" onclick="editShift()">S<bright>h</bright>ift</button>
+            `;
+            break;
+        case 'layer':
+            actionButtons = `
+                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                &nbsp;|&nbsp;
+                <button class="TitleButton" onclick="layerCopy()"><bright>C</bright>opy</button>
+                <button class="TitleButton" onclick="layerPaste()"><bright>P</bright>aste</button>
+                <button class="TitleButton" onclick="layerClear()">Cl<bright>e</bright>ar</button>
+            `;
+            break;
+        case 'transform':
+            actionButtons = `
+                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                &nbsp;|&nbsp;
+                <button class="TitleButton" onclick="transformReverse()"><bright>R</bright>everse</button>
+                <button class="TitleButton" onclick="transformFlipHorizontal()"><bright>F</bright>lip(↔)</button>
+                <button class="TitleButton" onclick="transformFlipVertical()">F<bright>l</bright>ip(↕)</button>
+            `;
+            break;
+        case 'shift':
+            actionButtons = `
+                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                &nbsp;|&nbsp;
+                <button class="TitleButton" onclick="shiftLeft()"><bright>←</bright></button>
+                <button class="TitleButton" onclick="shiftDown()"><bright>↓</bright></button>
+                <button class="TitleButton" onclick="shiftUp()"><bright>↑</bright></button>
+                <button class="TitleButton" onclick="shiftRight()"><bright>→</bright></button>
+            `
+            break;
+    }
 
     charTitle.innerHTML = `
-        <span>&nbsp;#${index}: </span><span style="color: var(--vga-light-gray)">${charDescriptions[index]}</span>
-        ${actionButtons}
+        <span>&nbsp;#${index}:&nbsp;</span><span style="color: var(--vga-light-gray)">${descriptions}</span>
+        &nbsp;&nbsp;|&nbsp;${actionButtons}${saveTexts}
     `;
 }
 
-function editCopy() {
+function transformFlipHorizontal() {
+    const h = fontInfo.height;
+    let newData = "";
+
+    for (let row = 0; row < h; row++) {
+        let start = row * 8;
+        let rb = editorData.changedData.substring(start, start + 8);
+        let fr = rb.split('').reverse().join('');
+        newData += fr;
+    }
+
+    editorData.changedData = newData;
+    renderCanvas();
+}
+
+function transformFlipVertical() {
+    const h = fontInfo.height;
+    let r = [];
+
+    for (let row = 0; row < h; row++) {
+        let start = row * 8;
+        r.push(editorData.changedData.substring(start, start + 8));
+    }
+
+    r.reverse();
+    let newData = r.join('');
+
+    editorData.changedData = newData;
+    renderCanvas();
+}
+
+function editBack() {
+    editorData.mode = 'edit'
+    updateTitle()
+}
+
+function editLayer() {
+    editorData.mode = 'layer'
+    updateTitle()
+}
+
+function editTransform() {
+    editorData.mode = 'transform'
+    updateTitle()
+}
+
+function editShift() {
+    editorData.mode = 'shift'
+    updateTitle()
+}
+
+function shiftUp() {
+    const h = fontInfo.height;
+    let r = [];
+
+    for (let i = 0; i < h; i++) {
+        r.push(editorData.changedData.substring(i * 8, (i + 1) * 8));
+    }
+
+    r.shift();
+    r.push("0".repeat(8));
+
+    editorData.changedData = r.join('');
+    renderCanvas();
+}
+
+function shiftDown() {
+    const h = fontInfo.height;
+    let r = [];
+
+    for (let i = 0; i < h; i++) {
+        r.push(editorData.changedData.substring(i * 8, (i + 1) * 8));
+    }
+
+    r.pop();
+    r.unshift("0".repeat(8));
+
+    editorData.changedData = r.join('');
+    renderCanvas();
+}
+
+function shiftLeft() {
+    const h = fontInfo.height;
+    let r = [];
+
+    for (let i = 0; i < h; i++) {
+        let s = editorData.changedData.substring(i * 8, (i + 1) * 8).slice(1) + "0";
+        r.push(s);
+    }
+
+    editorData.changedData = r.join('');
+    renderCanvas();
+}
+
+function shiftRight() {
+    const h = fontInfo.height;
+    let r = [];
+
+    for (let i = 0; i < h; i++) {
+        let s = "0" + editorData.changedData.substring(i * 8, (i + 1) * 8).slice(0, -1);
+        r.push(s);
+    }
+
+    editorData.changedData = r.join('');
+    renderCanvas();
+}
+
+function layerCopy() {
     editorData.clipboard = editorData.changedData;
 }
 
-function editPaste() {
+function layerPaste() {
     editorData.changedData = editorData.clipboard;
+    renderCanvas();
+}
+
+function layerClear() {
+    editorData.changedData = getEmptyData();
     renderCanvas();
 }
 
 const reverse = data => data.replace(/[01]/g, (match) => (match === '1' ? '0' : '1'));
 
-function editReverse() {
+function transformReverse() {
     editorData.changedData = reverse(editorData.changedData);
     renderCanvas();
 }
 
 async function openChar(index) {
-    if (editorData.isDirty) {
+    if (isEditing()) {
         updateTitle(true);
         return;
     }
@@ -223,7 +383,7 @@ function renderCanvas() {
     const index = editorData.index;
     const canvas = document.getElementById('pixelCanvas');
     const h = fontInfo.height;
-    const charData = editorData.isDirty ? editorData.changedData : fontInfo.data[index];
+    const charData = isEditing() ? editorData.changedData : fontInfo.data[index];
 
     canvas.oncontextmenu = (e) => e.preventDefault();
     canvas.style.gridTemplateRows = `repeat(${h}, 32px)`;
@@ -260,7 +420,7 @@ function updateAllPreviews() {
 }
 
 function pixelInput(i, e) {
-    if (!editorData.isDirty) return;
+    if (!isEditing()) return;
     if (e.buttons !== 1 && e.buttons !== 2) return;
 
     const newValue = e.buttons === 1 ? "1" : "0";
@@ -273,7 +433,7 @@ function pixelInput(i, e) {
 }
 
 function editChar() {
-    editorData.isDirty = true;
+    editorData.mode = 'edit';
     editorData.changedData = fontInfo.data[editorData.index];
     renderCanvas();
     updateTitle();
@@ -281,7 +441,7 @@ function editChar() {
 
 function saveChanges() {
     fontInfo.data[editorData.index] = editorData.changedData;
-    editorData.isDirty = false;
+    editorData.mode = 'normal';
 
     updateAllPreviews();
     renderCanvas();
@@ -289,25 +449,8 @@ function saveChanges() {
 }
 
 function undoChanges() {
-    editorData.isDirty = false;
+    editorData.mode = 'normal';
     editorData.changedData = "";
     renderCanvas();
     updateTitle();
-}
-
-document.addEventListener('keydown', (e) => {
-    const k = e.key.toUpperCase();
-    const abtn = document.querySelectorAll('button');
-    for (const btn of abtn) {
-        if (btn.offsetParent !== null && getBrightKey(btn) === k) {
-            btn.click();
-            e.preventDefault();
-            return;
-        }
-    }
-});
-
-function getBrightKey(button) {
-    const bb = button.querySelector('bright');
-    return bb ? bb.innerText.trim().toUpperCase() : null;
 }

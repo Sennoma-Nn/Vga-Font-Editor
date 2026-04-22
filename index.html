@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VGA FONT EDITOR ONLINE</title>
-    <link rel="shortcut icon" href="imgs/icon.svg" >
+    <link rel="shortcut icon" href="imgs/icon.svg">
 </head>
 
 <link rel="stylesheet" type="text/css" href="styles/styles.css">
@@ -16,8 +16,12 @@
     <div class="menuBar">
         <button class="menuButton" onclick="resetCharsData(16)">New (8x1<bright>6</bright>)</button>
         <button class="menuButton" onclick="resetCharsData(8)">New (8x<bright>8</bright>)</button>
-        <button class="menuButton" onclick="openFont()"><bright>O</bright>pen</button>
-        <button class="menuButton" onclick="saveFont()"><bright>S</bright>ave</button>
+        <button class="menuButton" onclick="openFont()">
+            <bright>O</bright>pen
+        </button>
+        <button class="menuButton" onclick="saveFont()">
+            <bright>S</bright>ave
+        </button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
         <div id="warningArea"></div>
     </div>
@@ -27,41 +31,35 @@
 
         <div class="canvasArea">
             <div class="charTitle" id="charTitle"></div>
-            <div class="pixelCanvas" id="pixelCanvas"></div>
-            <div class="helpText">
-                <p>╔═ Help ════════════════╗</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║ Click the <span style="color: var(--vga-brown)">E</span>dit button ║</p>
-                <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp; ║</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>║ Left-click to draw,&nbsp;&nbsp; ║</p>
-                <p>║ right-click to erase. ║</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
-                <p>╚═══════════════════════╝</p>
+            <div class="canvarsAndHelp">
+                <div class="pixelCanvas" id="pixelCanvas"></div>
+                <div class="helpText" id="helpText">
+                    <p>╔═ Help ════════════════╗</p>
+                    <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                    <p>║ Click the Edit button ║</p>
+                    <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp; ║</p>
+                    <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                    <p>║ Left-click to draw,&nbsp;&nbsp; ║</p>
+                    <p>║ right-click to erase. ║</p>
+                    <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                    <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="menuButton" onclick="document.getElementById('helpText').remove();">I <bright>k</bright>now</button>║
+                    </p>
+                    <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
+                    <p>╚═══════════════════════╝</p>
+                </div>
             </div>
         </div>
     </div>
 </body>
 
-<script>
-    const charArea = document.getElementById('charArea');
-    let buttonsHTML = '';
-
-    for (let i = 0; i < 256; i++) {
-        buttonsHTML += `
-            <button id="openChar${i}" onclick="openChar(${i})" class="charButton">
-                <div id="prev${i}" class="charPreview"></div>
-                <span class="charIndex">${i.toString(16).padStart(2, '0').toUpperCase()}</span>
-            </button>
-        `;
-    }
-    charArea.insertAdjacentHTML('beforeend', buttonsHTML);
-</script>
-
+<script src="scripts/init.js"></script>
 <script src="scripts/charDescriptions.js"></script>
 <script src="scripts/script.js"></script>
+<script src="scripts/keyboardShortcut.js"></script>
 
 </html>
