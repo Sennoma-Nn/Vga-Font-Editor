@@ -12,6 +12,15 @@ let editorData = {
 
 const isEditing = () => editorData.mode !== 'normal';
 const isDirty = () => isEditing() && editorData.changedData !== fontInfo.data[editorData.index];
+const isProjDirty = () => {
+    for (let i = 0; i < fontInfo.data.length; i++) {
+        const str = fontInfo.data[i];
+        if (str.includes('1')) {
+            return true;
+        }
+    }
+    return false;
+}
 
 const getEmptyData = () => "0".repeat(8 * fontInfo.height)
 
@@ -19,6 +28,7 @@ setEmptyData(16);
 
 function setEmptyData(h) {
     fontInfo.height = h;
+    editorData.clipboard = getEmptyData(fontInfo.height);
 
     const emptyData = getEmptyData();
 
@@ -47,26 +57,27 @@ async function resetCharsData(h) {
 
 function askIsAbandon() {
     return new Promise((resolve) => {
-        const abandonDiv = document.getElementById('warningArea');
+        if (isProjDirty()) {
+            const abandonDiv = document.getElementById('warningArea');
+            if (abandonDiv.querySelector('.menuButton')) {
+                resolve(false);
+                return;
+            }
 
-        if (abandonDiv.querySelector('.menuButton')) {
-            resolve(false);
-            return;
-        }
-
-        abandonDiv.innerHTML = `
+            abandonDiv.innerHTML = `
             <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
             <button class="menuButton" id="confirmYes"><bright>Y</bright>es</button>
             <button class="menuButton" id="confirmNo"><bright>N</bright>o</button>
         `;
 
-        const handleChoice = (choice) => {
-            abandonDiv.innerHTML = '';
-            resolve(choice);
-        };
+            const handleChoice = (choice) => {
+                abandonDiv.innerHTML = '';
+                resolve(choice);
+            };
 
-        document.getElementById('confirmYes').onclick = () => handleChoice(true);
-        document.getElementById('confirmNo').onclick = () => handleChoice(false);
+            document.getElementById('confirmYes').onclick = () => handleChoice(true);
+            document.getElementById('confirmNo').onclick = () => handleChoice(false);
+        } else resolve(true);
     });
 }
 
@@ -114,7 +125,7 @@ async function openFont() {
         }
 
         let fontHeight = charLen / 8;
-        if (fontHeight != 8 && fontHeight != 16) {
+        if (!(fontHeight > 0 && fontHeight <= 32)) {
             showError(`Font data error!`);
             return;
         }
@@ -132,7 +143,7 @@ async function openFont() {
     };
 }
 
-function saveFont() {
+async function saveFont() {
     if (isDirty()) {
         updateTitle(true);
         return;
@@ -149,6 +160,27 @@ function saveFont() {
             const rowString = charData.substring(row * 8, (row + 1) * 8);
             byteArray[i * fontInfo.height + row] = parseInt(rowString, 2);
         }
+    }
+
+    if ('showSaveFilePicker' in window) {
+        try {
+            const opts = {
+                suggestedName: 'FONT.RAW',
+                types: [{
+                    description: 'VGA Bitmap Font File',
+                    accept: { 'application/octet-stream': ['.RAW'] }
+                }]
+            };
+            const fileHandle = await window.showSaveFilePicker(opts);
+            const writable = await fileHandle.createWritable();
+            await writable.write(byteArray);
+            await writable.close();
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error(err);
+            }
+        }
+        return;
     }
 
     const blob = new Blob([byteArray], { type: 'application/octet-stream' });
@@ -179,7 +211,16 @@ function truncateText(text) {
 function updateTitle(isWarning = false) {
     const index = editorData.index;
     const charTitle = document.getElementById('charTitle');
-    const descriptions = truncateText(charDescriptions[index]);
+
+    const descriptions = editorData.mode === 'normal' || editorData.mode === 'edit'
+        ? `
+            <span>&nbsp;#${index}:&nbsp;</span>
+                <span style="color: var(--vga-light-gray)" title="${charDescriptions[index].replace(/"/g, '&quot;')}">
+                    ${truncateText(charDescriptions[index])}
+                </span>
+            &nbsp;&nbsp;|&nbsp;
+        ` : '';
+
     const saveTexts = isEditing() ? `
         &nbsp;|&nbsp;&nbsp;
         <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
@@ -232,8 +273,7 @@ function updateTitle(isWarning = false) {
     }
 
     charTitle.innerHTML = `
-        <span>&nbsp;#${index}:&nbsp;</span><span style="color: var(--vga-light-gray)">${descriptions}</span>
-        &nbsp;&nbsp;|&nbsp;${actionButtons}${saveTexts}
+        ${descriptions}${actionButtons}${saveTexts}
     `;
 }
 
@@ -463,4 +503,12 @@ function undoChanges() {
     editorData.changedData = "";
     renderCanvas();
     updateTitle();
+}
+
+function helpDisenable() {
+    const helpDiv = document.getElementById('helpText');
+    if (helpDiv) {
+        helpDiv.style.display = 'none';
+        localStorage.setItem('helpDisenable', 'true');
+    }
 }

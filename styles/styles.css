@@ -22,22 +22,23 @@
     src: url('../font/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'MBytePC230';
+    src: url('../font/Web437_MBytePC230_8x16.woff') format('truetype');
+}
+
 html,
 body {
     padding: 0px;
     margin: 0px;
     width: 100%;
     height: 100%;
-    font-family: PC3K_Alt;
-    font-size: 16px;
+    font-family: MBytePC230;
+    font-size: 32px;
     color: var(--vga-black);
     min-width: 1700px;
     min-height: 640px;
     user-select: none;
-}
-
-.helpText bright {
-    color: var(--vga-brown)
 }
 
 .menuBar {
@@ -54,7 +55,7 @@ bright {
 
 .menuButton {
     height: 100%;
-    font-family: PC3K_Alt;
+    font-family: MBytePC230;
     line-height: 100%;
     background: none;
     background-color: transparent;
@@ -102,6 +103,7 @@ bright {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    font-size: 16px;
 }
 
 .charButton:hover,
@@ -134,6 +136,7 @@ bright {
     position: absolute;
     bottom: 14px;
     padding: 0 2px;
+    font-family: PC3K_Alt;
 }
 
 .editor {
@@ -144,11 +147,15 @@ bright {
 
 .charArea {
     background-color: var(--vga-dark-gray);
-    width: 64px;
+    width: 256px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-shrink: 0
 }
 
 .charArea::-webkit-scrollbar {
@@ -166,13 +173,43 @@ bright {
 }
 
 .helpText {
-    line-height: 16px;
-    margin: 32px;
+    line-height: 32px;
+    margin: 0px 0px;
     padding: 16px 16px;
-    background-color: var(--vga-white);
-    color: var(--vga-black);
+    background-color: var(--vga-magenta);
+    color: var(--vga-white);
     width: fit-content;
     height: fit-content;
+}
+
+.helpText .menuButton {
+    color: var(--vga-white);
+}
+
+.helpText .menuButton:hover {
+    background-color: var(--vga-light-magenta);
+}
+
+.helpText .menuButton:active {
+    background-color: var(--vga-white);
+    color: var(--vga-black)
+}
+
+.helpText .menuButton.pressed {
+    background-color: var(--vga-white);
+    color: var(--vga-black)
+}
+
+.helpText .menuButton:active bright {
+    color: var(--vga-brown)
+}
+
+.helpText .menuButton.pressed bright {
+    color: var(--vga-brown)
+}
+
+.helpText bright {
+    color: var(--vga-yellow)
 }
 
 .helpText p {
@@ -229,7 +266,7 @@ bright {
     display: grid;
     grid-template-columns: repeat(8, 32px);
     grid-template-rows: repeat(16, 32px);
-    width: fit-content
+    width: fit-content;
 }
 
 .pixel {
