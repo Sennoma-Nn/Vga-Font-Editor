@@ -32,6 +32,12 @@
     src: url('../fonts/Unifont.ttf') format('truetype');
 }
 
+uni {
+    display: inline-block;
+    position: relative;
+    top: 4px;
+}
+
 html,
 body {
     padding: 0px;

@@ -200,9 +200,9 @@ function debug() {
 }
 
 function truncateText(text) {
-    const macLen = Number(lang('TruncateTextMaxLen', '32'));
-    if (text.length > macLen) {
-        return text.slice(0, macLen).trim() + '...';
+    const maxLen = Number(lang('TruncateTextMaxLen', '32'));
+    if (text.length > maxLen) {
+        return text.slice(0, maxLen).trim() + '...';
     }
     return text;
 }
@@ -214,8 +214,8 @@ function updateTitle(isWarning = false) {
     const descriptions = editorData.mode === 'normal' || editorData.mode === 'edit'
         ? `
             <span>&nbsp;#${index}:&nbsp;</span>
-                <span style="color: var(--vga-light-gray)" title="${lang('CharDescriptions', charDescriptions)[index].replace(/"/g, '&quot;')}">
-                    ${truncateText(lang('CharDescriptions', charDescriptions)[index])}
+                <span style="color: var(--vga-light-gray)" title="${lang('CharDescriptions', charDescriptions, false)[index].replace(/"/g, '&quot;')}">
+                    ${toUni(truncateText(lang('CharDescriptions', charDescriptions, false)[index]))}
                 </span>
             &nbsp;&nbsp;|&nbsp;
         ` : '';
