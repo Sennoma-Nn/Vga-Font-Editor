@@ -19,12 +19,17 @@
 
 @font-face {
     font-family: 'PC3K_Alt';
-    src: url('../font/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
+    src: url('../fonts/Px437_Sharp_PC3K_Alt.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'MBytePC230';
-    src: url('../font/Web437_MBytePC230_8x16.woff') format('truetype');
+    src: url('../fonts/Web437_MBytePC230_8x16.woff') format('truetype');
+}
+
+@font-face {
+    font-family: 'Unifont';
+    src: url('../fonts/Unifont.ttf') format('truetype');
 }
 
 html,
@@ -33,7 +38,7 @@ body {
     margin: 0px;
     width: 100%;
     height: 100%;
-    font-family: MBytePC230;
+    font-family: MBytePC230, Unifont;
     font-size: 32px;
     color: var(--vga-black);
     min-width: 1700px;
@@ -55,7 +60,7 @@ bright {
 
 .menuButton {
     height: 100%;
-    font-family: MBytePC230;
+    font-family: MBytePC230, Unifont;
     line-height: 100%;
     background: none;
     background-color: transparent;

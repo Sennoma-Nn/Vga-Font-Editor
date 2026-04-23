@@ -24,8 +24,6 @@ const isProjDirty = () => {
 
 const getEmptyData = () => "0".repeat(8 * fontInfo.height)
 
-setEmptyData(16);
-
 function setEmptyData(h) {
     fontInfo.height = h;
     editorData.clipboard = getEmptyData(fontInfo.height);
@@ -65,10 +63,10 @@ function askIsAbandon() {
             }
 
             abandonDiv.innerHTML = `
-            <span style="color: var(--vga-red)">&nbsp;* Current will be lost!!!</span>
-            <button class="menuButton" id="confirmYes"><bright>Y</bright>es</button>
-            <button class="menuButton" id="confirmNo"><bright>N</bright>o</button>
-        `;
+                <span style="color: var(--vga-red)">${lang('WarnLost', '&nbsp;* Current will be lost!!!')}</span>
+                <button class="menuButton" id="confirmYes">${lang('Yes', '<bright>Y</bright>es')}</button>
+                <button class="menuButton" id="confirmNo">${lang('No', '<bright>N</bright>o')}</button>
+            `;
 
             const handleChoice = (choice) => {
                 abandonDiv.innerHTML = '';
@@ -120,13 +118,13 @@ async function openFont() {
 
         let charLen = result.length / 256;
         if (charLen % 1 !== 0) {
-            showError("Font data error!");
+            showError(lang('ErrorFont', "Font data error!"));
             return;
         }
 
         let fontHeight = charLen / 8;
         if (!(fontHeight > 0 && fontHeight <= 32)) {
-            showError(`Font data error!`);
+            showError(lang('ErrorFont', "Font data error!"));
             return;
         }
         fontInfo.height = fontHeight;
@@ -202,8 +200,9 @@ function debug() {
 }
 
 function truncateText(text) {
-    if (text.length > 32) {
-        return text.slice(0, 32).trim() + '...';
+    const macLen = Number(lang('TruncateTextMaxLen', '32'));
+    if (text.length > macLen) {
+        return text.slice(0, macLen).trim() + '...';
     }
     return text;
 }
@@ -215,54 +214,54 @@ function updateTitle(isWarning = false) {
     const descriptions = editorData.mode === 'normal' || editorData.mode === 'edit'
         ? `
             <span>&nbsp;#${index}:&nbsp;</span>
-                <span style="color: var(--vga-light-gray)" title="${charDescriptions[index].replace(/"/g, '&quot;')}">
-                    ${truncateText(charDescriptions[index])}
+                <span style="color: var(--vga-light-gray)" title="${lang('CharDescriptions', charDescriptions)[index].replace(/"/g, '&quot;')}">
+                    ${truncateText(lang('CharDescriptions', charDescriptions)[index])}
                 </span>
             &nbsp;&nbsp;|&nbsp;
         ` : '';
 
     const saveTexts = isEditing() ? `
         &nbsp;|&nbsp;&nbsp;
-        <span style="color: var(${isWarning ? '--vga-brown)"> * ' : '--vga-white)">'}Save?</span>
+        <span style="color: var(${isWarning ? '--vga-brown' : '--vga-white'})">${isWarning ? '* ' : ''}${lang('SaveQ', 'Save?')}</span>
         &nbsp;
-        <button class="TitleButton" onclick="saveChanges()"><bright>Y</bright>es</button>
-        <button class="TitleButton" onclick="undoChanges()"><bright>N</bright>o</button>
+        <button class="TitleButton" onclick="saveChanges()">${lang('Yes', '<bright>Y</bright>es')}</button>
+        <button class="TitleButton" onclick="undoChanges()">${lang('No', '<bright>N</bright>o')}</button>
     ` : '';
 
     let actionButtons;
 
     switch (editorData.mode) {
         case 'normal':
-            actionButtons = `<button class="TitleButton" onclick="editChar()"><bright>E</bright>dit</button>`;
+            actionButtons = `<button class="TitleButton" onclick="editChar()">${lang('Edit', '<bright>E</bright>dit')}</button>`;
             break;
         case 'edit':
             actionButtons = `
-                <button class="TitleButton" onclick="editLayer()"><bright>L</bright>ayer</button>
-                <button class="TitleButton" onclick="editTransform()"><bright>T</bright>ransform</button>
-                <button class="TitleButton" onclick="editShift()">S<bright>h</bright>ift</button>
+                <button class="TitleButton" onclick="editLayer()">${lang('Layer', '<bright>L</bright>ayer')}</button>
+                <button class="TitleButton" onclick="editTransform()">${lang('Transform', '<bright>T</bright>ransform')}</button>
+                <button class="TitleButton" onclick="editShift()">${lang('Shift', 'S<bright>h</bright>ift')}</button>
             `;
             break;
         case 'layer':
             actionButtons = `
-                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
                 &nbsp;|&nbsp;
-                <button class="TitleButton" onclick="layerCopy()"><bright>C</bright>opy</button>
-                <button class="TitleButton" onclick="layerPaste()"><bright>P</bright>aste</button>
-                <button class="TitleButton" onclick="layerClear()">Cle<bright>a</bright>r</button>
+                <button class="TitleButton" onclick="layerCopy()">${lang('Copy', '<bright>C</bright>opy')}</button>
+                <button class="TitleButton" onclick="layerPaste()">${lang('Paste', '<bright>P</bright>aste')}</button>
+                <button class="TitleButton" onclick="layerClear()">${lang('Clear', 'Cle<bright>a</bright>r')}</button>
             `;
             break;
         case 'transform':
             actionButtons = `
-                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
                 &nbsp;|&nbsp;
-                <button class="TitleButton" onclick="transformReverse()"><bright>R</bright>everse</button>
-                <button class="TitleButton" onclick="transformFlipHorizontal()"><bright>F</bright>lip(↔)</button>
-                <button class="TitleButton" onclick="transformFlipVertical()">F<bright>l</bright>ip(↕)</button>
+                <button class="TitleButton" onclick="transformReverse()">${lang('Reverse', '<bright>R</bright>everse')}</button>
+                <button class="TitleButton" onclick="transformFlipHorizontal()">${lang('FlipH', '<bright>F</bright>lip(↔)')}</button>
+                <button class="TitleButton" onclick="transformFlipVertical()">${lang('FlipV', 'F<bright>l</bright>ip(↕)')}</button>
             `;
             break;
         case 'shift':
             actionButtons = `
-                <button class="TitleButton" onclick="editBack()"><bright>B</bright>ack</button>
+                <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
                 &nbsp;|&nbsp;
                 <button class="TitleButton" onclick="shiftLeft()"><bright>←</bright></button>
                 <button class="TitleButton" onclick="shiftDown()"><bright>↓</bright></button>

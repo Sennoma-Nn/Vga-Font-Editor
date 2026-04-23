@@ -14,14 +14,10 @@
 <body>
     <input type="file" id="OpenFontInput" style="display: none;" />
     <div class="menuBar">
-        <button class="menuButton" onclick="resetCharsData(16)">New (8x1<bright>6</bright>)</button>
-        <button class="menuButton" onclick="resetCharsData(8)">New (8x<bright>8</bright>)</button>
-        <button class="menuButton" onclick="openFont()">
-            <bright>O</bright>pen
-        </button>
-        <button class="menuButton" onclick="saveFont()">
-            <bright>S</bright>ave
-        </button>
+        <button class="menuButton" onclick="resetCharsData(16)" id="btn-new16"></button>
+        <button class="menuButton" onclick="resetCharsData(8)" id="btn-new8"></button>
+        <button class="menuButton" onclick="openFont()" id="btn-open"></button>
+        <button class="menuButton" onclick="saveFont()" id="btn-save"></button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
         <div id="warningArea"></div>
     </div>
@@ -38,9 +34,10 @@
     </div>
 </body>
 
-<script src="scripts/init.js"></script>
 <script src="scripts/charDescriptions.js"></script>
 <script src="scripts/script.js"></script>
+<script src="scripts/i18n.js"></script>
+<script src="scripts/init.js"></script>
 <script src="scripts/keyboardShortcut.js"></script>
 
 </html>
