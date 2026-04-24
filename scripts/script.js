@@ -431,18 +431,21 @@ function renderCanvas() {
     const index = editorData.index;
     const canvas = document.getElementById('pixelCanvas');
     const h = fontInfo.height;
+    const wh = h <= 24 ? 32 : 16;
     const charData = isEditing() ? editorData.changedData : fontInfo.data[index];
 
     canvas.oncontextmenu = (e) => e.preventDefault();
-    canvas.style.gridTemplateRows = `repeat(${h}, 32px)`;
+    canvas.style.gridTemplateColumns = `repeat(8, ${wh}px)`;
+    canvas.style.gridTemplateRows = `repeat(${h}, ${wh}px)`;
 
     let pixelsHTML = '';
     for (let i = 0; i < charData.length; i++) {
         const color = Number(charData[i]) ? 'var(--vga-black)' : 'var(--vga-white)';
         pixelsHTML += `<div class="pixel" 
-            style="background-color: ${color}" 
+            style="background-color: ${color}; width: ${wh}px; height: ${wh}px" 
             onmousedown="pixelInput(${i}, event)" 
-            onmouseenter="pixelInput(${i}, event)"></div>`;
+            onmouseenter="pixelInput(${i}, event)">
+        </div>`;
     }
     canvas.innerHTML = pixelsHTML;
 }
