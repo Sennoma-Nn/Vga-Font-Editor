@@ -1,3 +1,16 @@
 # VGA FONT EDITOR ONLINE
 
 ![SCREEN SHOT](/imgs/ScreenShot.png)
+
+---
+
+- **ENGLISH**: https://sennoma-nn.github.io/Vga-Font-Editor-Online
+- **SIMPLIFIED CHINESE**: https://sennoma-nn.github.io/Vga-Font-Editor-Online/?lang=zh-cn
+- **TRADITIONAL CHINESE**: https://sennoma-nn.github.io/Vga-Font-Editor-Online/?lang=zh-tw
+- **JAPANESE**: https://sennoma-nn.github.io/Vga-Font-Editor-Online/?lang=ja
+
+---
+
+help:  
+Click the Edit button to edit the glyph.  
+Left-click to draw, right-click to erase.

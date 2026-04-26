@@ -29,7 +29,22 @@
 
 @font-face {
     font-family: 'Unifont';
-    src: url('../fonts/Unifont.ttf') format('truetype');
+    src: url('../fonts/Unifont.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Unifont';
+    src: url('../fonts/Unifont.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'UnifontTW';
+    src: url('../fonts/UnifontTW.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'UnifontJP';
+    src: url('../fonts/UnifontJP.otf') format('opentype');
 }
 
 uni {
@@ -44,10 +59,10 @@ body {
     margin: 0px;
     width: 100%;
     height: 100%;
-    font-family: MBytePC230, Unifont;
+    font-family: MBytePC230;
     font-size: 32px;
     color: var(--vga-black);
-    min-width: 1700px;
+    min-width: 1450px;
     min-height: 640px;
     user-select: none;
 }
@@ -66,7 +81,6 @@ bright {
 
 .menuButton {
     height: 100%;
-    font-family: MBytePC230, Unifont;
     line-height: 100%;
     background: none;
     background-color: transparent;
@@ -152,7 +166,7 @@ bright {
 
 .editor {
     width: 100%;
-    height: calc(100% - 32px);
+    height: calc(100% - 32px * 2);
     display: flex;
 }
 

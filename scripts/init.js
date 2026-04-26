@@ -5,6 +5,8 @@
     document.getElementById('btn-open').innerHTML = lang('Open', '<bright>O</bright>pen');
     document.getElementById('btn-save').innerHTML = lang('Save', '<bright>S</bright>ave');
 
+    document.body.style.fontFamily = lang('UiFont', 'MBytePC230')
+
     const charArea = document.getElementById('charArea');
     let buttonsHTML = '';
 
@@ -20,7 +22,7 @@
 
     const container = document.querySelector('.canvarsAndHelp');
     const isDisabled = localStorage.getItem('helpDisenable') === 'true';
-    
+
     if (!isDisabled) {
         const defaultHelp = `
             <div class="helpText" id="helpText">
