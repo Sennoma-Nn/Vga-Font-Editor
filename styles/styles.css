@@ -29,7 +29,7 @@
 
 @font-face {
     font-family: 'Unifont';
-    src: url('../fonts/Unifont.otf') format('truetype');
+    src: url('../fonts/Unifont.otf') format('opentype');
 }
 
 @font-face {

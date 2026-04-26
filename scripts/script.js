@@ -63,7 +63,7 @@ function askIsAbandon() {
             }
 
             abandonDiv.innerHTML = `
-                <span style="color: var(--vga-red)">${lang('WarnLost', '&nbsp;* Current will be lost!!!')}</span>
+                <span style="color: var(--vga-red)">&nbsp;${lang('WarnLost', '&nbsp;* Current will be lost!!!')}</span>
                 <button class="menuButton" id="confirmYes">${lang('Yes', '<bright>Y</bright>es')}</button>
                 <button class="menuButton" id="confirmNo">${lang('No', '<bright>N</bright>o')}</button>
             `;
@@ -73,8 +73,8 @@ function askIsAbandon() {
                 resolve(choice);
             };
 
-            document.getElementById('confirmYes').onclick = () => handleChoice(true);
-            document.getElementById('confirmNo').onclick = () => handleChoice(false);
+            document.getElementById('confirmYes').onclick = () => { if (!isDirty()) { handleChoice(true) } else { updateTitle(true) } };
+            document.getElementById('confirmNo').onclick = () => { if (!isDirty()) { handleChoice(false) } else { updateTitle(true) } };
         } else resolve(true);
     });
 }

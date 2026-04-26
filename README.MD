@@ -11,6 +11,6 @@
 
 ---
 
-help:  
-Click the Edit button to edit the glyph.  
-Left-click to draw, right-click to erase.
+HELP:  
+CLICK THE EDIT BUTTON TO EDIT THE GLYPH.  
+LEFT-CLICK TO DRAW, RIGHT-CLICK TO ERASE.
