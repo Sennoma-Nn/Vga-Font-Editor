@@ -5,6 +5,7 @@
         "New8": "新建(8x<bright>8</bright>)",
         "Open": "打开(<bright>O</bright>)",
         "Save": "保存(<bright>S</bright>)",
+        "Goto": "前往(<bright>G</bright>):",
         "Edit": "编辑(<bright>E</bright>)",
         "Layer": "图层(<bright>L</bright>)",
         "Transform": "变换(<bright>T</bright>)",
@@ -21,7 +22,7 @@
         "No": "否(<bright>N</bright>)",
         "WarnLost": "* 当前编辑将丢失！！！",
         "ErrorFont": "字体数据错误！",
-        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ 帮助 ═════════╗</p><p>║ 点击编辑按钮,&nbsp;&nbsp;║</p><p>║ 编辑字符。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p><p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ║</p><p>║ 左键涂色,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p><p>║ 右键擦除。&nbsp;&nbsp;&nbsp;&nbsp; ║</p><p>╚════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">知道了(<bright>K</bright>)</button>═╝</p></div>",
+        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ 帮助 ═════════╗</p><p>║ 点击编辑按钮， ║</p><p>║ 编辑当前字符。 ║</p><p>║ 鼠标左键涂色， ║</p><p>║ 鼠标右键擦除。 ║</p><p>╚════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">知道了(<bright>K</bright>)</button>═╝</p></div>",
         "TruncateTextMaxLen": "16",
         "CharDescriptions": [
             "NUL (空字符)",
@@ -288,6 +289,7 @@
         "New8": "新建(8x<bright>8</bright>)",
         "Open": "開啟(<bright>O</bright>)",
         "Save": "儲存(<bright>S</bright>)",
+        "Goto": "前往(<bright>G</bright>):",
         "Edit": "編輯(<bright>E</bright>)",
         "Layer": "圖層(<bright>L</bright>)",
         "Transform": "變換(<bright>T</bright>)",
@@ -304,7 +306,7 @@
         "No": "否(<bright>N</bright>)",
         "WarnLost": "* 目前編輯將會遺失！！！",
         "ErrorFont": "字型數據錯誤！",
-        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ 說明 ═════════╗</p><p>║ 點擊編輯按鈕,&nbsp;&nbsp;║</p><p>║ 編輯字元。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p><p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ║</p><p>║ 左鍵塗色,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p><p>║ 右鍵擦除。&nbsp;&nbsp;&nbsp;&nbsp; ║</p><p>╚════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">知道了(<bright>K</bright>)</button>═╝</p></div>",
+        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ 說明 ═════════╗</p><p>║ 點擊編輯按鈕， ║</p><p>║ 編輯当前字元。 ║</p><p>║ 滑鼠左鍵塗色， ║</p><p>║ 滑鼠右鍵擦除。 ║</p><p>╚════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">知道了(<bright>K</bright>)</button>═╝</p></div>",
         "TruncateTextMaxLen": "16",
         "CharDescriptions": [
             "NUL (空字元)",
@@ -571,10 +573,11 @@
         "New8": "新規(8x<bright>8</bright>)",
         "Open": "開く(<bright>O</bright>)",
         "Save": "保存(<bright>S</bright>)",
+        "Goto": "移動(<bright>G</bright>):",
         "Edit": "編集(<bright>E</bright>)",
         "Layer": "レイヤー(<bright>L</bright>)",
         "Transform": "変形(<bright>T</bright>)",
-        "Shift": "移動(<bright>H</bright>)",
+        "Shift": "ずらし(<bright>H</bright>)",
         "Back": "戻る(<bright>B</bright>)",
         "Copy": "コピー(<bright>C</bright>)",
         "Paste": "貼付(<bright>P</bright>)",
@@ -587,7 +590,7 @@
         "No": "いいえ(<bright>N</bright>)",
         "WarnLost": "* 現在の編集内容は失われます！！！",
         "ErrorFont": "フォントデータエラー！",
-        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ ヘルプ ═══════════╗</p><p>║ 編集ボタンを押し、 ║</p><p>║ 文字を編集します。 ║</p><p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p><p>║ 左クリックで描画、 ║</p><p>║ 右クリックで消去。 ║</p><p>╚══════════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">了解(<bright>K</bright>)</button>═╝</p></div>",
+        "HelpBlock": "<div class=\"helpText\" id=\"helpText\"><p>╔═ ヘルプ ═══════════╗</p><p>║ 編集ボタンを押し、 ║</p><p>║ 文字を編集します。 ║</p><p>║ 左クリックで描画、 ║</p><p>║ 右クリックで消去。 ║</p><p>╚══════════<button class=\"menuButton\" id=\"closeHelpBtn\" onclick=\"helpDisenable()\">了解(<bright>K</bright>)</button>═╝</p></div>",
         "TruncateTextMaxLen": "32"
     }
 }

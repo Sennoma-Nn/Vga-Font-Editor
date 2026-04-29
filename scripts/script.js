@@ -7,6 +7,8 @@ let editorData = {
     index: 0,
     changedData: '',
     mode: 'normal',
+    goto: false,
+    gotoInput: '',
     clipboard: ''
 }
 
@@ -211,11 +213,18 @@ function updateTitle(isWarning = false) {
     const index = editorData.index;
     const charTitle = document.getElementById('charTitle');
 
+    let descriptionsText = '';
+    if (editorData.mode === 'normal') {
+        descriptionsText = toUni(truncateText(lang('CharDescriptions', charDescriptions, false)[index]));
+    } else if (editorData.mode === 'edit') {
+        descriptionsText = toUni((lang('CharDescriptions', charDescriptions, false)[index]).split(' - ')[0].trim());
+    }
+
     const descriptions = editorData.mode === 'normal' || editorData.mode === 'edit'
         ? `
             <span>&nbsp;#${index}:&nbsp;</span>
                 <span style="color: var(--vga-light-gray)" title="${lang('CharDescriptions', charDescriptions, false)[index].replace(/"/g, '&quot;')}">
-                    ${toUni(truncateText(lang('CharDescriptions', charDescriptions, false)[index]))}
+                    ${descriptionsText}
                 </span>
             &nbsp;&nbsp;|&nbsp;
         ` : '';
@@ -420,6 +429,7 @@ async function openChar(index) {
     const currentBtn = document.getElementById(`openChar${index}`);
     if (currentBtn) {
         currentBtn.classList.add('active');
+        currentBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
 
     editorData.index = index;
@@ -513,4 +523,62 @@ function helpDisenable() {
         helpDiv.style.display = 'none';
         localStorage.setItem('helpDisenable', 'true');
     }
+}
+
+function updataGoto() {
+    if (!editorData.goto) {
+        document.getElementById('gotoInput').innerHTML = '__';
+        return;
+    }
+
+    const gotoInputSpan = document.getElementById('gotoInput');
+    const val = editorData.gotoInput;
+
+    if (val.length === 0) gotoInputSpan.innerHTML = '<bright>_</bright>_';
+    else if (val.length === 1) gotoInputSpan.innerHTML = val + '<bright>_</bright>';
+    else gotoInputSpan.innerHTML = val.slice(0, 2);
+}
+
+function cancelGoto() {
+    document.getElementById('gotoInput').innerHTML = '__';
+
+    editorData.goto = false;
+    editorData.gotoInput = '';
+    updataGoto();
+}
+
+function gotoJump() {
+    if (isDirty()) {
+        updateTitle(true);
+        return;
+    }
+
+    document.getElementById('gotoInput').innerHTML = '__';
+
+    const val = editorData.gotoInput;
+    if (val.length <= 2) {
+        const index = parseInt(val, 16);
+        if (!isNaN(index) && index >= 0 && index <= 255) {
+            cancelGoto();
+            openChar(index);
+            return;
+        }
+    }
+    cancelGoto();
+}
+
+function gotoInputStart() {
+    if (editorData.goto) return;
+
+    document.getElementById('gotoInput').innerHTML = '__';
+
+    if (isDirty()) {
+        updateTitle(true);
+        return;
+    }
+
+    editorData.mode = 'normal';
+    editorData.goto = true;
+    editorData.gotoInput = '';
+    updataGoto();
 }

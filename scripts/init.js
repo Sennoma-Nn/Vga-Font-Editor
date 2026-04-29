@@ -1,13 +1,16 @@
 (async () => {
     await loadLanguage();
-    document.getElementById('btn-new16').innerHTML = lang('New16', 'New (8x1<bright>6</bright>)');
-    document.getElementById('btn-new8').innerHTML = lang('New8', 'New (8x<bright>8</bright>)');
-    document.getElementById('btn-open').innerHTML = lang('Open', '<bright>O</bright>pen');
-    document.getElementById('btn-save').innerHTML = lang('Save', '<bright>S</bright>ave');
+    document.getElementById('new16Button').innerHTML = lang('New16', 'New (8x1<bright>6</bright>)');
+    document.getElementById('new8Button').innerHTML = lang('New8', 'New (8x<bright>8</bright>)');
+    document.getElementById('openButton').innerHTML = lang('Open', '<bright>O</bright>pen');
+    document.getElementById('saveButton').innerHTML = lang('Save', '<bright>S</bright>ave');
+
+    document.getElementById('gotoButtonText').innerHTML = lang('Goto', '<bright>G</bright>oto:');
+    document.getElementById('gotoInput').innerHTML = '__';
 
     document.body.style.fontFamily = lang('UiFont', 'MBytePC230')
 
-    const charArea = document.getElementById('charArea');
+    const charButtonArea = document.getElementById('charButtonArea');
     let buttonsHTML = '';
 
     for (let i = 0; i < 256; i++) {
@@ -18,7 +21,7 @@
             </button>
         `;
     }
-    charArea.insertAdjacentHTML('beforeend', buttonsHTML);
+    charButtonArea.insertAdjacentHTML('beforeend', buttonsHTML);
 
     const container = document.querySelector('.canvarsAndHelp');
     const isDisabled = localStorage.getItem('helpDisenable') === 'true';
@@ -29,8 +32,6 @@
                 <p>╔═ Help ════════════════╗</p>
                 <p>║ Click the Edit button ║</p>
                 <p>║ to edit the glyph.&nbsp;&nbsp;&nbsp; ║</p>
-                <p>║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</p>
                 <p>║ Left-click to draw,&nbsp;&nbsp; ║</p>
                 <p>║ right-click to erase. ║</p>
                 <p>╚══════════════<button class="menuButton" id="closeHelpBtn" onclick="helpDisenable()">I <bright>k</bright>now</button>═╝</p>

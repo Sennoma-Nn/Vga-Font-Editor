@@ -82,31 +82,33 @@ bright {
 .menuButton {
     height: 100%;
     line-height: 100%;
-    background: none;
-    background-color: transparent;
+    background: transparent;
     border: none;
     box-shadow: none;
     outline: none;
-    padding: 0px 16px;
-    margin: 0px;
+    padding: 0 16px;
+    margin: 0;
     font: inherit;
     color: var(--vga-black);
 }
 
 .menuButton bright {
-    color: var(--vga-brown)
+    color: var(--vga-brown);
 }
 
 .menuButton:hover {
     background-color: var(--vga-light-gray);
 }
 
-.menuButton:active {
-    background-color: var(--vga-dark-gray);
-}
-
+.menuButton:active,
 .menuButton.pressed {
     background-color: var(--vga-dark-gray);
+    color: var(--vga-white);
+}
+
+.menuButton:active bright,
+.menuButton.pressed bright {
+    color: var(--vga-yellow);
 }
 
 .charButton {
@@ -166,7 +168,7 @@ bright {
 
 .editor {
     width: 100%;
-    height: calc(100% - 32px * 2);
+    height: calc(100% - 32px);
     display: flex;
 }
 
@@ -174,6 +176,11 @@ bright {
     background-color: var(--vga-dark-gray);
     width: 256px;
     height: 100%;
+}
+
+.charButtonArea {
+    width: 256px;
+    height: calc(100% - 32px);
     overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: none;
@@ -183,8 +190,44 @@ bright {
     flex-shrink: 0
 }
 
-.charArea::-webkit-scrollbar {
+.charButtonArea::-webkit-scrollbar {
     width: 0 !important
+}
+
+.goto {
+    background-color: var(--vga-dark-gray);
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    color: var(--vga-white);
+    display: flex;
+}
+
+.goto bright {
+    color: var(--vga-yellow);
+}
+
+.goto .menuButton {
+    color: var(--vga-white);
+    width: 100%;
+   text-align: left; 
+}
+
+.goto .menuButton:hover {
+    background-color: var(--vga-light-gray);
+    color: var(--vga-black);
+}
+
+.goto .menuButton:active,
+.goto .menuButton.pressed {
+    background-color: var(--vga-white);
+    color: var(--vga-black);
+}
+
+.goto .menuButton:hover bright,
+.goto .menuButton:active bright,
+.goto .menuButton.pressed bright {
+    color: var(--vga-brown);
 }
 
 .canvasArea {
@@ -200,11 +243,12 @@ bright {
 .helpText {
     line-height: 32px;
     margin: 0px 0px;
-    padding: 16px 16px;
+    padding: 32px;
     background-color: var(--vga-magenta);
     color: var(--vga-white);
     width: fit-content;
     height: fit-content;
+    margin: 32px
 }
 
 .helpText .menuButton {
@@ -215,26 +259,19 @@ bright {
     background-color: var(--vga-light-magenta);
 }
 
-.helpText .menuButton:active {
-    background-color: var(--vga-white);
-    color: var(--vga-black)
-}
-
+.helpText .menuButton:active,
 .helpText .menuButton.pressed {
     background-color: var(--vga-white);
-    color: var(--vga-black)
+    color: var(--vga-black);
 }
 
-.helpText .menuButton:active bright {
-    color: var(--vga-brown)
-}
-
+.helpText .menuButton:active bright,
 .helpText .menuButton.pressed bright {
-    color: var(--vga-brown)
+    color: var(--vga-brown);
 }
 
 .helpText bright {
-    color: var(--vga-yellow)
+    color: var(--vga-yellow);
 }
 
 .helpText p {
@@ -291,11 +328,18 @@ bright {
     display: grid;
     grid-template-columns: repeat(8, 32px);
     grid-template-rows: repeat(16, 32px);
+    height: fit-content;
     width: fit-content;
+    margin: 32px;
 }
 
 .pixel {
     width: 32px;
     height: 32px;
     box-sizing: border-box;
+}
+
+.pixelCanvas,
+.helpText {
+    box-shadow: 32px 32px 0 0 var(--vga-dark-gray);
 }
