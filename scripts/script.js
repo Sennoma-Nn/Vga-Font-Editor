@@ -1,44 +1,103 @@
-let fontInfo = {
-    height: 16,
-    data: []
+let editorData = {
+    tab: 0,
+    tabsData: [
+        {
+            name: 'UNTITLED.RAW',
+            index: 0,
+            changedData: '',
+            mode: 'normal',
+            fontInfo: {
+                height: 16,
+                data: []
+            }
+        }
+    ],
+    inputmode: 'normal',
+    stringInput: '',
+    clipboard: {
+        data: '',
+        height: NaN
+    }
+}
+
+function escapeHTML(str) {
+    return str.replace(/[&<>'" ]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;',
+            ' ': '&nbsp;',
+        }[tag] || tag)
+    );
+}
+
+let getTabData = (data, tab = editorData.tab) => {
+    return editorData.tabsData[tab][data];
+}
+
+let setTabData = (data, val, tab = editorData.tab) => {
+    editorData.tabsData[tab][data] = val;
+}
+
+let getFontData = (data, tab = editorData.tab) => {
+    let font = editorData.tabsData[tab].fontInfo;
+    return font[data];
+}
+
+let setFontData = (data, val, tab = editorData.tab) => {
+    let font = editorData.tabsData[tab].fontInfo;
+    font[data] = val;
+}
+
+const isEditing = (tab = editorData.tab) => getTabData('mode', tab) !== 'normal';
+
+const isDirty = (tab = editorData.tab) => {
+    if (!isEditing(tab)) return false;
+    const changed = getTabData('changedData', tab);
+    const original = getFontData('data', tab)[getTabData('index', tab)];
+    return changed !== original;
 };
 
-let editorData = {
-    index: 0,
-    changedData: '',
-    mode: 'normal',
-    goto: false,
-    gotoInput: '',
-    clipboard: ''
-}
 
-const isEditing = () => editorData.mode !== 'normal';
-const isDirty = () => isEditing() && editorData.changedData !== fontInfo.data[editorData.index];
-const isProjDirty = () => {
-    for (let i = 0; i < fontInfo.data.length; i++) {
-        const str = fontInfo.data[i];
-        if (str.includes('1')) {
-            return true;
-        }
+const isProjDirty = (tab = editorData.tab) => {
+    for (let i = 0; i < getFontData('data', tab).length; i++) {
+        const str = getFontData('data', tab)[i];
+        if (str.includes('1')) return true;
     }
     return false;
-}
+};
 
-const getEmptyData = () => "0".repeat(8 * fontInfo.height)
+const isAnyTabDirty = () => {
+    for (let i = 0; i < editorData.tabsData.length; i++) {
+        if (isDirty(i)) return true;
+    }
+    return false;
+};
 
-function setEmptyData(h) {
-    fontInfo.height = h;
-    editorData.clipboard = getEmptyData(fontInfo.height);
+const isAnyProjDirty = () => {
+    for (let i = 0; i < editorData.tabsData.length; i++) {
+        if (isProjDirty(i)) return true;
+    }
+    return false;
+};
 
-    const emptyData = getEmptyData();
+const getEmptyData = (h = getFontData('height')) => "0".repeat(8 * h)
+
+function setEmptyData(h, tab) {
+    setFontData('height', h, tab);
+
+    const emptyData = getEmptyData(h);
+    editorData.clipboard.data = emptyData;
+    editorData.clipboard.height = h;
 
     for (let i = 0; i <= 255; i++) {
-        fontInfo.data[i] = emptyData;
+        getFontData('data', tab)[i] = emptyData;
     }
 
-    editorData.mode = 'normal';
+    openChar(getTabData('index'), true);
     updateAllPreviews();
-    openChar(editorData.index);
 }
 
 async function resetCharsData(h) {
@@ -47,7 +106,7 @@ async function resetCharsData(h) {
         return;
     }
 
-    editorData.mode = 'normal';
+    setTabData('mode', 'normal');
 
     const proceed = await askIsAbandon();
     if (!proceed) return;
@@ -97,7 +156,7 @@ async function openFont() {
         return;
     }
 
-    editorData.mode = 'normal';
+    setTabData('mode', 'normal');
 
     const proceed = await askIsAbandon();
     if (!proceed) return;
@@ -129,17 +188,19 @@ async function openFont() {
             showError(lang('ErrorFont', "Font data error!"));
             return;
         }
-        fontInfo.height = fontHeight;
+        setFontData('height', fontHeight);
 
         for (let i = 0; i <= 255; i++) {
             let s = i * charLen;
             let e = (i + 1) * charLen;
-            fontInfo.data[i] = result.slice(s, e);
+            getFontData('data')[i] = result.slice(s, e);
         }
 
+        setTabData('name', file.name);
         updateAllPreviews();
-        openChar(editorData.index);
+        openChar(getTabData('index'), true);
         fileInput.value = '';
+        updateTabs();
     };
 }
 
@@ -149,23 +210,23 @@ async function saveFont() {
         return;
     }
 
-    editorData.mode = 'normal';
+    setTabData('mode', 'normal');
 
-    const totalBytes = 256 * fontInfo.height;
+    const totalBytes = 256 * getFontData('height');
     const byteArray = new Uint8Array(totalBytes);
 
     for (let i = 0; i < 256; i++) {
-        const charData = fontInfo.data[i];
-        for (let row = 0; row < fontInfo.height; row++) {
+        const charData = getFontData('data')[i];
+        for (let row = 0; row < getFontData('height'); row++) {
             const rowString = charData.substring(row * 8, (row + 1) * 8);
-            byteArray[i * fontInfo.height + row] = parseInt(rowString, 2);
+            byteArray[i * getFontData('height') + row] = parseInt(rowString, 2);
         }
     }
 
     if ('showSaveFilePicker' in window) {
         try {
             const opts = {
-                suggestedName: 'FONT.RAW',
+                suggestedName: getTabData('name'),
                 types: [{
                     description: 'VGA Bitmap Font File',
                     accept: { 'application/octet-stream': ['.RAW'] }
@@ -188,7 +249,7 @@ async function saveFont() {
     const link = document.createElement('a');
 
     link.href = url;
-    link.download = 'FONT.RAW';
+    link.download = getTabData('name');
 
     document.body.appendChild(link);
     link.click();
@@ -197,8 +258,16 @@ async function saveFont() {
     URL.revokeObjectURL(url);
 }
 
+function renameFont() {
+    if (editorData.inputmode === 'goto') cancelGoto();
+
+    editorData.inputmode = 'name';
+    editorData.stringInput = getTabData('name');
+    updateTabs();
+}
+
 function debug() {
-    console.log(fontInfo);
+    console.log(editorData);
 }
 
 function truncateText(text) {
@@ -210,27 +279,27 @@ function truncateText(text) {
 }
 
 function updateTitle(isWarning = false) {
-    const index = editorData.index;
+    const index = getTabData('index');
     const charTitle = document.getElementById('charTitle');
 
     let descriptionsText = '';
-    if (editorData.mode === 'normal') {
+    if (getTabData('mode') === 'normal') {
         descriptionsText = toUni(truncateText(lang('CharDescriptions', charDescriptions, false)[index]));
-    } else if (editorData.mode === 'edit') {
+    } else if (getTabData('mode') === 'edit') {
         descriptionsText = toUni((lang('CharDescriptions', charDescriptions, false)[index]).split(' - ')[0].trim());
     }
 
-    const descriptions = editorData.mode === 'normal' || editorData.mode === 'edit'
+    const descriptions = getTabData('mode') === 'normal' || getTabData('mode') === 'edit'
         ? `
             <span>&nbsp;#${index}:&nbsp;</span>
                 <span style="color: var(--vga-light-gray)" title="${lang('CharDescriptions', charDescriptions, false)[index].replace(/"/g, '&quot;')}">
                     ${descriptionsText}
                 </span>
-            &nbsp;&nbsp;|&nbsp;
+            <span>&nbsp;&nbsp;|&nbsp;</span>
         ` : '';
 
     const saveTexts = isEditing() ? `
-        &nbsp;|&nbsp;&nbsp;
+        <span>&nbsp;|&nbsp;&nbsp;</span>
         <span style="color: var(${isWarning ? '--vga-brown' : '--vga-white'})">${isWarning ? '* ' : ''}${lang('SaveQ', 'Save?')}</span>
         &nbsp;
         <button class="TitleButton" onclick="saveChanges()">${lang('Yes', '<bright>Y</bright>es')}</button>
@@ -239,7 +308,7 @@ function updateTitle(isWarning = false) {
 
     let actionButtons;
 
-    switch (editorData.mode) {
+    switch (getTabData('mode')) {
         case 'normal':
             actionButtons = `<button class="TitleButton" onclick="editChar()">${lang('Edit', '<bright>E</bright>dit')}</button>`;
             break;
@@ -253,7 +322,7 @@ function updateTitle(isWarning = false) {
         case 'layer':
             actionButtons = `
                 <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
-                &nbsp;|&nbsp;
+                <span>&nbsp;|&nbsp;</span>
                 <button class="TitleButton" onclick="layerCopy()">${lang('Copy', '<bright>C</bright>opy')}</button>
                 <button class="TitleButton" onclick="layerPaste()">${lang('Paste', '<bright>P</bright>aste')}</button>
                 <button class="TitleButton" onclick="layerClear()">${lang('Clear', 'Cle<bright>a</bright>r')}</button>
@@ -262,16 +331,16 @@ function updateTitle(isWarning = false) {
         case 'transform':
             actionButtons = `
                 <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
-                &nbsp;|&nbsp;
-                <button class="TitleButton" onclick="transformReverse()">${lang('Reverse', '<bright>R</bright>everse')}</button>
+                <span>&nbsp;|&nbsp;</span>
+                <button class="TitleButton" onclick="transformReverse()">${lang('Reverse', 'Re<bright>v</bright>erse')}</button>
                 <button class="TitleButton" onclick="transformFlipHorizontal()">${lang('FlipH', '<bright>F</bright>lip(↔)')}</button>
-                <button class="TitleButton" onclick="transformFlipVertical()">${lang('FlipV', 'F<bright>l</bright>ip(↕)')}</button>
+                <button class="TitleButton" onclick="transformFlipVertical()">${lang('FlipV', 'Fl<bright>i</bright>p(↕)')}</button>
             `;
             break;
         case 'shift':
             actionButtons = `
                 <button class="TitleButton" onclick="editBack()">${lang('Back', '<bright>B</bright>ack')}</button>
-                &nbsp;|&nbsp;
+                <span>&nbsp;|&nbsp;</span>
                 <button class="TitleButton" onclick="shiftLeft()"><bright>←</bright></button>
                 <button class="TitleButton" onclick="shiftDown()"><bright>↓</bright></button>
                 <button class="TitleButton" onclick="shiftUp()"><bright>↑</bright></button>
@@ -286,163 +355,182 @@ function updateTitle(isWarning = false) {
 }
 
 function transformFlipHorizontal() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let newData = "";
 
     for (let row = 0; row < h; row++) {
         let start = row * 8;
-        let rb = editorData.changedData.substring(start, start + 8);
+        let rb = getTabData('changedData').substring(start, start + 8);
         let fr = rb.split('').reverse().join('');
         newData += fr;
     }
 
-    editorData.changedData = newData;
+    setTabData('changedData', newData);
     renderCanvas();
 }
 
 function transformFlipVertical() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let r = [];
 
     for (let row = 0; row < h; row++) {
         let start = row * 8;
-        r.push(editorData.changedData.substring(start, start + 8));
+        r.push(getTabData('changedData').substring(start, start + 8));
     }
 
     r.reverse();
     let newData = r.join('');
 
-    editorData.changedData = newData;
+    setTabData('changedData', newData);
     renderCanvas();
 }
 
 function editBack() {
-    editorData.mode = 'edit'
+    setTabData('mode', 'edit')
     updateTitle()
 }
 
 function editLayer() {
-    editorData.mode = 'layer'
+    setTabData('mode', 'layer')
     updateTitle()
 }
 
 function editTransform() {
-    editorData.mode = 'transform'
+    setTabData('mode', 'transform')
     updateTitle()
 }
 
 function editShift() {
-    editorData.mode = 'shift'
+    setTabData('mode', 'shift')
     updateTitle()
 }
 
 function shiftUp() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let r = [];
 
     for (let i = 0; i < h; i++) {
-        r.push(editorData.changedData.substring(i * 8, (i + 1) * 8));
+        r.push(getTabData('changedData').substring(i * 8, (i + 1) * 8));
     }
 
     r.shift();
     r.push("0".repeat(8));
 
-    editorData.changedData = r.join('');
+    setTabData('changedData', r.join(''));
     renderCanvas();
 }
 
 function shiftDown() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let r = [];
 
     for (let i = 0; i < h; i++) {
-        r.push(editorData.changedData.substring(i * 8, (i + 1) * 8));
+        r.push(getTabData('changedData').substring(i * 8, (i + 1) * 8));
     }
 
     r.pop();
     r.unshift("0".repeat(8));
 
-    editorData.changedData = r.join('');
+    setTabData('changedData', r.join(''));
     renderCanvas();
 }
 
 function shiftLeft() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let r = [];
 
     for (let i = 0; i < h; i++) {
-        let s = editorData.changedData.substring(i * 8, (i + 1) * 8).slice(1) + "0";
+        let s = getTabData('changedData').substring(i * 8, (i + 1) * 8).slice(1) + "0";
         r.push(s);
     }
 
-    editorData.changedData = r.join('');
+    setTabData('changedData', r.join(''));
     renderCanvas();
 }
 
 function shiftRight() {
-    const h = fontInfo.height;
+    const h = getFontData('height');
     let r = [];
 
     for (let i = 0; i < h; i++) {
-        let s = "0" + editorData.changedData.substring(i * 8, (i + 1) * 8).slice(0, -1);
+        let s = "0" + getTabData('changedData').substring(i * 8, (i + 1) * 8).slice(0, -1);
         r.push(s);
     }
 
-    editorData.changedData = r.join('');
+    setTabData('changedData', r.join(''));
     renderCanvas();
 }
 
 function layerCopy() {
-    editorData.clipboard = editorData.changedData;
+    editorData.clipboard.data = getTabData('changedData');
+    editorData.clipboard.height = getFontData('height');
 }
 
 function layerPaste() {
-    editorData.changedData = editorData.clipboard;
-    renderCanvas();
+    let layerHeight = getFontData('height');
+
+    if (layerHeight === editorData.clipboard.height) {
+        setTabData('changedData', editorData.clipboard.data);
+        renderCanvas();
+    } else if (layerHeight > editorData.clipboard.height) {
+        let newData = editorData.clipboard.data.padEnd(8 * layerHeight, '0');
+
+        setTabData('changedData', newData);
+        renderCanvas();
+        editShift();
+    } else {
+        let truncated = editorData.clipboard.data.slice(0, 8 * layerHeight);
+
+        setTabData('changedData', truncated);
+        renderCanvas();
+    }
 }
 
 function layerClear() {
-    editorData.changedData = getEmptyData();
+    setTabData('changedData', getEmptyData());
     renderCanvas();
 }
 
 const reverse = data => data.replace(/[01]/g, (match) => (match === '1' ? '0' : '1'));
 
 function transformReverse() {
-    editorData.changedData = reverse(editorData.changedData);
+    setTabData('changedData', reverse(getTabData('changedData')));
     renderCanvas();
 }
 
-async function openChar(index) {
-    if (isDirty()) {
-        updateTitle(true);
-        return;
-    }
-
-    editorData.mode = 'normal';
-
+function highlightCharButton(index) {
     const lastActive = document.querySelector('.charButton.active');
-    if (lastActive) {
-        lastActive.classList.remove('active');
-    }
+    if (lastActive) lastActive.classList.remove('active');
 
     const currentBtn = document.getElementById(`openChar${index}`);
     if (currentBtn) {
         currentBtn.classList.add('active');
         currentBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
+}
 
-    editorData.index = index;
+async function openChar(index, toNormal) {
+    if (isDirty()) {
+        highlightCharButton(index)
+        renderCanvas();
+        updateTitle(getTabData('index') !== index);
+        return;
+    }
+
+    if (toNormal) setTabData('mode', 'normal');
+
+    highlightCharButton(index)
+    setTabData('index', index);
     renderCanvas();
     updateTitle();
 }
 
 function renderCanvas() {
-    const index = editorData.index;
+    const index = getTabData('index');
     const canvas = document.getElementById('pixelCanvas');
-    const h = fontInfo.height;
+    const h = getFontData('height');
     const wh = h <= 24 ? 32 : 16;
-    const charData = isEditing() ? editorData.changedData : fontInfo.data[index];
+    const charData = isEditing() ? getTabData('changedData') : getFontData('data')[index];
 
     canvas.oncontextmenu = (e) => e.preventDefault();
     canvas.style.gridTemplateColumns = `repeat(8, ${wh}px)`;
@@ -462,17 +550,22 @@ function renderCanvas() {
 
 function updatePreviews(i) {
     const preview = document.getElementById(`prev${i}`);
-    const charData = fontInfo.data[i];
-    const h = fontInfo.height;
+    const charData = getFontData('data')[i];
+    const h = getFontData('height');
+    const isEmpty = !charData.includes('1');
 
-    preview.style.gridTemplateRows = `repeat(${h}, 2px)`;
+    if (isEmpty) {
+        preview.innerHTML = '';
+    } else {
+        preview.style.gridTemplateRows = `repeat(${h}, 2px)`;
 
-    let pixelsHTML = '';
-    for (let j = 0; j < charData.length; j++) {
-        const isVisible = Number(charData[j]) ? '' : 'style="background-color: transparent"';
-        pixelsHTML += `<div class="prevPixel" ${isVisible}></div>`;
+        let pixelsHTML = '';
+        for (let j = 0; j < charData.length; j++) {
+            const isVisible = Number(charData[j]) ? '' : 'style="background-color: transparent"';
+            pixelsHTML += `<div class="prevPixel" ${isVisible}></div>`;
+        }
+        preview.innerHTML = pixelsHTML;
     }
-    preview.innerHTML = pixelsHTML;
 }
 
 function updateAllPreviews() {
@@ -487,32 +580,32 @@ function pixelInput(i, e) {
 
     const newValue = e.buttons === 1 ? "1" : "0";
 
-    let dataArr = editorData.changedData.split('');
+    let dataArr = getTabData('changedData').split('');
     dataArr[i] = newValue;
-    editorData.changedData = dataArr.join('');
+    setTabData('changedData', dataArr.join(''));
 
     e.target.style.backgroundColor = newValue === "1" ? 'var(--vga-black)' : 'var(--vga-white)';
 }
 
 function editChar() {
-    editorData.mode = 'edit';
-    editorData.changedData = fontInfo.data[editorData.index];
+    setTabData('mode', 'edit');
+    setTabData('changedData', getFontData('data')[getTabData('index')]);
     renderCanvas();
     updateTitle();
 }
 
 function saveChanges() {
-    fontInfo.data[editorData.index] = editorData.changedData;
-    editorData.mode = 'normal';
+    getFontData('data')[getTabData('index')] = getTabData('changedData');
+    setTabData('mode', 'normal');
 
-    updatePreviews(editorData.index);
+    updatePreviews(getTabData('index'));
     renderCanvas();
     updateTitle();
 }
 
 function undoChanges() {
-    editorData.mode = 'normal';
-    editorData.changedData = "";
+    setTabData('mode', 'normal');
+    setTabData('changedData', "");
     renderCanvas();
     updateTitle();
 }
@@ -526,13 +619,13 @@ function helpDisenable() {
 }
 
 function updataGoto() {
-    if (!editorData.goto) {
-        document.getElementById('gotoInput').innerHTML = '__';
+    if (editorData.inputmode !== 'goto') {
+        document.getElementById('stringInput').innerHTML = '__';
         return;
     }
 
-    const gotoInputSpan = document.getElementById('gotoInput');
-    const val = editorData.gotoInput;
+    const gotoInputSpan = document.getElementById('stringInput');
+    const val = editorData.stringInput;
 
     if (val.length === 0) gotoInputSpan.innerHTML = '<bright>_</bright>_';
     else if (val.length === 1) gotoInputSpan.innerHTML = val + '<bright>_</bright>';
@@ -540,10 +633,10 @@ function updataGoto() {
 }
 
 function cancelGoto() {
-    document.getElementById('gotoInput').innerHTML = '__';
+    document.getElementById('stringInput').innerHTML = '__';
 
-    editorData.goto = false;
-    editorData.gotoInput = '';
+    editorData.inputmode = 'normal';
+    editorData.stringInput = '';
     updataGoto();
 }
 
@@ -553,14 +646,31 @@ function gotoJump() {
         return;
     }
 
-    document.getElementById('gotoInput').innerHTML = '__';
+    document.getElementById('stringInput').innerHTML = '__';
 
-    const val = editorData.gotoInput;
+    const val = editorData.stringInput;
+
+    if (val.includes('+')) {
+        const index = getTabData('index');
+        const step = val == '++' ? 4 : 1;
+        cancelGoto();
+        openChar(Math.min(index + step, 0xFF), true);
+        return;
+    }
+
+    if (val.includes('-')) {
+        const index = getTabData('index');
+        const step = val == '--' ? 4 : 1;
+        cancelGoto();
+        openChar(Math.max(index - step, 0), true);
+        return;
+    }
+
     if (val.length <= 2) {
-        const index = parseInt(val, 16);
-        if (!isNaN(index) && index >= 0 && index <= 255) {
+        const nweIndex = parseInt(val, 16);
+        if (!isNaN(nweIndex) && nweIndex >= 0 && nweIndex <= 255) {
             cancelGoto();
-            openChar(index);
+            openChar(nweIndex, true);
             return;
         }
     }
@@ -568,17 +678,127 @@ function gotoJump() {
 }
 
 function gotoInputStart() {
-    if (editorData.goto) return;
+    if (editorData.inputmode === 'name') {
+        editorData.inputmode = 'normal';
+        updateTabs();
+    }
 
-    document.getElementById('gotoInput').innerHTML = '__';
+    if (editorData.inputmode === 'goto') return;
+
+    document.getElementById('stringInput').innerHTML = '__';
 
     if (isDirty()) {
         updateTitle(true);
         return;
     }
 
-    editorData.mode = 'normal';
-    editorData.goto = true;
-    editorData.gotoInput = '';
+    setTabData('mode', 'normal');
+    editorData.inputmode = 'goto';
+    editorData.stringInput = '';
     updataGoto();
+}
+
+function changeTab(tab) {
+    const warningDiv = document.getElementById('warningArea');
+    const confirmNoBtn = warningDiv ? warningDiv.querySelector('#confirmNo') : null;
+    if (confirmNoBtn) {
+        confirmNoBtn.click();
+    }
+
+    if (editorData.inputmode === 'name') editorData.inputmode = 'normal';
+
+    editorData.tab = tab;
+    updateAllPreviews();
+    openChar(getTabData('index'));
+    updateTabs();
+}
+
+function addTab() {
+    const newIndex = editorData.tabsData.length;
+
+    editorData.tabsData = [
+        ...editorData.tabsData,
+        {
+            name: 'UNTITLED.RAW',
+            index: 0,
+            changedData: '',
+            mode: 'normal',
+            fontInfo: {
+                height: 16,
+                data: []
+            }
+        }
+    ];
+
+    setEmptyData(16, newIndex);
+    changeTab(newIndex);
+    updateTabs();
+}
+
+async function removeTab() {
+    if (isDirty()) {
+        updateTitle(true);
+        return;
+    }
+
+    setTabData('mode', 'normal');
+
+    const proceed = await askIsAbandon();
+    if (!proceed) return;
+
+    const currentTab = editorData.tab;
+    const tabsCount = editorData.tabsData.length;
+
+    if (tabsCount <= 1) {
+        editorData.tabsData = [
+            {
+                name: 'UNTITLED.RAW',
+                index: 0,
+                changedData: '',
+                mode: 'normal',
+                fontInfo: {
+                    height: 16,
+                    data: []
+                }
+            }
+        ];
+
+        setEmptyData(16);
+        updateTabs();
+
+        return;
+    }
+
+    editorData.tabsData.splice(currentTab, 1);
+
+    changeTab(Math.max(editorData.tab - 1, 0));
+    updateTabs();
+}
+
+function updateTabs() {
+    const tabs = document.getElementById('tabs');
+
+    let tabsHTML = '';
+    for (let i = 0; i < editorData.tabsData.length; i++) {
+        const tabData = editorData.tabsData[i];
+        const isSelecting = (i === editorData.tab);
+        const inpusName = tabData.name;
+
+        let displayName = '';
+        if (isSelecting && editorData.inputmode === 'name') {
+            displayName = escapeHTML(editorData.stringInput) + '<bright>_</bright>';
+        } else {
+            displayName = escapeHTML(inpusName);
+        }
+
+        tabsHTML += `
+            <div class="${isSelecting ? 'tabButtonWhiteBG' : 'tabButtonDarkGrayBG'}">
+                <button class="${isSelecting ? 'menuButton' : 'menuButtonDark'}" onclick='changeTab(${i})'>
+                    ${displayName}
+                </button>
+            </div> 
+        `;
+    }
+
+    tabs.innerHTML = tabsHTML;
 }

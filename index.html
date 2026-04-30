@@ -13,9 +13,23 @@
 
 <body>
     <input type="file" id="OpenFontInput" style="display: none;" />
+
+    <div id="tabBar" class="tabBar">
+        <div class="tabs" id="tabs"></div>
+        <div class="tabButtonDarkGrayBG">
+            <button class="menuButtonDark" onclick="addTab()">
+                +
+            </button>
+            <button class="menuButtonDark" onclick="removeTab()">
+                -
+            </button>
+        </div>
+    </div>
+
     <div class="menuBar">
         <button class="menuButton" onclick="resetCharsData(16)" id="new16Button"></button>
         <button class="menuButton" onclick="resetCharsData(8)" id="new8Button"></button>
+        <button class="menuButton" onclick="renameFont()" id="renameButton"></button>
         <button class="menuButton" onclick="openFont()" id="openButton"></button>
         <button class="menuButton" onclick="saveFont()" id="saveButton"></button>
         <!-- <button class="menuButton" onclick="debug()">Debug</button> -->
@@ -27,7 +41,7 @@
             <div class="goto" id="goto">
                 <button class="menuButton" onclick="gotoInputStart()">
                     <span id="gotoButtonText"></span>
-                    <span id="gotoInput"></span>
+                    <span id="stringInput"></span>
                 </button>
             </div>
             <div class="charButtonArea" id="charButtonArea"></div>
@@ -46,7 +60,7 @@
 <script src="scripts/charDescriptions.js"></script>
 <script src="scripts/script.js"></script>
 <script src="scripts/i18n.js"></script>
-<script src="scripts/init.js"></script>
 <script src="scripts/keyboardShortcut.js"></script>
+<script src="scripts/init.js"></script>
 
 </html>

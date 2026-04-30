@@ -2,11 +2,12 @@
     await loadLanguage();
     document.getElementById('new16Button').innerHTML = lang('New16', 'New (8x1<bright>6</bright>)');
     document.getElementById('new8Button').innerHTML = lang('New8', 'New (8x<bright>8</bright>)');
+    document.getElementById('renameButton').innerHTML = lang('Rename', '<bright>R</bright>ename');
     document.getElementById('openButton').innerHTML = lang('Open', '<bright>O</bright>pen');
     document.getElementById('saveButton').innerHTML = lang('Save', '<bright>S</bright>ave');
 
     document.getElementById('gotoButtonText').innerHTML = lang('Goto', '<bright>G</bright>oto:');
-    document.getElementById('gotoInput').innerHTML = '__';
+    document.getElementById('stringInput').innerHTML = '__';
 
     document.body.style.fontFamily = lang('UiFont', 'MBytePC230')
 
@@ -15,7 +16,7 @@
 
     for (let i = 0; i < 256; i++) {
         buttonsHTML += `
-            <button id="openChar${i}" onclick="openChar(${i})" class="charButton">
+            <button id="openChar${i}" onclick="openChar(${i}, true)" class="charButton">
                 <div id="prev${i}" class="charPreview"></div>
                 <span class="charIndex">${i.toString(16).padStart(2, '0').toUpperCase()}</span>
             </button>
@@ -41,8 +42,9 @@
     }
 
     setEmptyData(16);
+    updateTabs();
 })();
 
-window.addEventListener('beforeunload', function (event) {
-    if (isProjDirty() || isEditing()) event.preventDefault();
+window.addEventListener('beforeunload', (event) => {
+    if (isAnyProjDirty() || isAnyTabDirty()) event.preventDefault();
 });

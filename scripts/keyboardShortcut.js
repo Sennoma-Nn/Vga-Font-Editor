@@ -1,7 +1,33 @@
 let activePressedBtn = null;
 
 document.addEventListener('keydown', (e) => {
-    if (editorData.goto) {
+    if (editorData.inputmode === 'name') {
+        e.preventDefault();
+        const k = e.key;
+
+        if (k === 'Enter') {
+            if (editorData.stringInput.trim().length > 0) {
+                setTabData('name', editorData.stringInput);
+            }
+            editorData.inputmode = 'normal';
+            updateTabs();
+        } else if (k === 'Escape') {
+            editorData.inputmode = 'normal';
+            updateTabs();
+        } else if (k === 'Backspace') {
+            editorData.stringInput = editorData.stringInput.slice(0, -1);
+            updateTabs();
+        } else if (k.length === 1) {
+            const invalidChars = /[<>:"/\\|?*]/;
+            if (!invalidChars.test(k)) {
+                editorData.stringInput += k;
+                updateTabs();
+            }
+        }
+        return;
+    }
+
+    if (editorData.inputmode === 'goto') {
         e.preventDefault();
         const k = e.key;
 
@@ -10,18 +36,24 @@ document.addEventListener('keydown', (e) => {
         } else if (k === 'Escape') {
             cancelGoto();
         } else if (k === 'Backspace') {
-            if (editorData.gotoInput.length > 0) {
-                editorData.gotoInput = editorData.gotoInput.slice(0, -1);
+            if (editorData.stringInput.length > 0) {
+                editorData.stringInput = editorData.stringInput.slice(0, -1);
                 updataGoto();
             }
-        } else if (k.length === 1 && /[0-9A-Fa-f]/i.test(k)) {
-            if (editorData.gotoInput.length < 2) {
-                editorData.gotoInput += k.toUpperCase();
+        } else if (k.length === 1 && /^[0-9A-Fa-f+-]$/i.test(k)) {
+            let newInput = editorData.stringInput + (k === '+' || k === '-' ? k : k.toUpperCase());
+
+            const isHex = /^[0-9A-F]*$/i.test(newInput);
+            const isAllPlus = /^\+*$/.test(newInput);
+            const isAllMinus = /^-*$/.test(newInput);
+
+            if ((isHex || isAllPlus || isAllMinus) && newInput.length <= 2) {
+                editorData.stringInput = newInput;
                 updataGoto();
             }
         }
         return;
-    };
+    }
 
     if (e.repeat) return;
 
@@ -44,7 +76,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-    if (editorData.goto) return;
+    if (editorData.inputmode === 'goto' || editorData.inputmode === 'name') return;
 
     const k = key2Symbol(e.key.toUpperCase());
 
