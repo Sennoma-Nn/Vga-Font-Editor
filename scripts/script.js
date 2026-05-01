@@ -498,20 +498,21 @@ function transformReverse() {
     renderCanvas();
 }
 
-function highlightCharButton(index) {
-    const lastActive = document.querySelector('.charButton.active');
-    if (lastActive) lastActive.classList.remove('active');
-
+function highlightCharButton(index, updateHighlight) {
     const currentBtn = document.getElementById(`openChar${index}`);
-    if (currentBtn) {
+
+    if (updateHighlight) {
+        const lastActive = document.querySelector('.charButton.active');
+        if (lastActive) lastActive.classList.remove('active');
         currentBtn.classList.add('active');
-        currentBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
+
+    currentBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
 }
 
-async function openChar(index, toNormal) {
+async function openChar(index, toNormal, updateHighlight) {
     if (isDirty()) {
-        highlightCharButton(index)
+        highlightCharButton(index, updateHighlight)
         renderCanvas();
         updateTitle(getTabData('index') !== index);
         return;
@@ -519,7 +520,7 @@ async function openChar(index, toNormal) {
 
     if (toNormal) setTabData('mode', 'normal');
 
-    highlightCharButton(index)
+    highlightCharButton(index, true)
     setTabData('index', index);
     renderCanvas();
     updateTitle();
@@ -709,7 +710,7 @@ function changeTab(tab) {
 
     editorData.tab = tab;
     updateAllPreviews();
-    openChar(getTabData('index'));
+    openChar(getTabData('index'), false, true);
     updateTabs();
 }
 

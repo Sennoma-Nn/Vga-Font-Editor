@@ -48,3 +48,10 @@
 window.addEventListener('beforeunload', (event) => {
     if (isAnyProjDirty() || isAnyTabDirty()) event.preventDefault();
 });
+
+window.addEventListener('keydown', function (e) {
+    const arrows = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if (arrows.includes(e.key)) {
+        e.preventDefault();
+    }
+});
