@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sennoma-nn.github.io/Vga-Font-Editor-Online/sitemap.xml
